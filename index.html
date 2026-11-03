@@ -43,7 +43,7 @@ tr.tot td{font-weight:700;background:var(--head)!important;border-top:2px solid 
 .hero h2{color:var(--chalk);margin-bottom:8px;font-size:18px;letter-spacing:.04em}.hero h2::before{background:var(--gold2)}
 .hero .big{font:700 34px/1.2 var(--serif);color:#fff}
 .hero .dd{display:inline-block;margin:10px 0 0;padding:3px 16px;border-radius:999px;background:var(--gold2);color:#1C2541;font-weight:700;font-size:17px}
-.hero .jt{margin:16px 0 0;padding-top:12px;border-top:1px solid rgba(255,255,255,.22);font-size:15px;color:#E8D3A3}.hero .jt b{display:block;font:700 22px/1.3 var(--serif);color:#fff;margin:2px 0 0}.hero .jt i{font-style:normal;margin-left:8px;padding:1px 10px;border-radius:999px;background:rgba(255,255,255,.16);font-size:14px;font-weight:700;color:#fff;vertical-align:middle}
+.hero .jt{margin:18px 0 0;padding-top:16px;border-top:1px solid rgba(255,255,255,.22);font:700 18px/1.3 var(--serif);letter-spacing:.04em;color:var(--chalk)}.hero .jt b{display:block;font:700 34px/1.2 var(--serif);color:#fff;margin:8px 0 0;letter-spacing:0}.hero .jt i{display:inline-block;margin:10px 0 0;padding:3px 16px;border-radius:999px;background:var(--gold2);color:#1C2541;font:700 17px 'Noto Sans KR',sans-serif;font-style:normal;letter-spacing:0}
 .big{font:700 22px/1.3 var(--serif);margin:0}.dd{margin:0 0 8px;color:var(--muted);font-size:14px}
 .mc{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold2);border-radius:16px;padding:13px 14px;margin-bottom:10px;box-shadow:var(--shadow)}
 .mc b{font-weight:700}.mc>b:first-of-type{font:700 17px var(--serif)}.mc .c{float:right;color:var(--muted);font-size:12px;background:var(--head);border-radius:999px;padding:2px 10px;margin-top:2px}
@@ -148,7 +148,7 @@ function finCards(rows,items,q){
 function nextJoint(){const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate());let y=t.getFullYear(),m=t.getMonth();
   for(let i=0;i<30;i++,m++){if((m%12+1)%2===0)continue;const e=new Date(y+Math.floor(m/12),m%12+1,0);while(e.getDay()!==4)e.setDate(e.getDate()-1);if(e>=t0)return{d:e,k:Math.round((e-t0)/864e5)}}return null}
 function jointHtml(){const j=nextJoint();if(!j)return '';const p=n=>String(n).padStart(2,'0');
-  return '<p class="jt">다음 합동모임<b>'+j.d.getFullYear()+'.'+p(j.d.getMonth()+1)+'.'+p(j.d.getDate())+' (목)<i>'+(j.k===0?'오늘':'D-'+j.k)+'</i></b></p>'}
+  return '<div class="jt">다음 합동모임<b>'+j.d.getFullYear()+'.'+p(j.d.getMonth()+1)+'.'+p(j.d.getDate())+' (목)</b><i>'+(j.k===0?'오늘':'D-'+j.k)+'</i></div>'}
 function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
