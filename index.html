@@ -45,11 +45,11 @@ nav button.on{color:var(--ink);font-weight:700;box-shadow:inset 0 3px 0 var(--go
 <nav id="nav"></nav>
 <script>
 const SHEET_ID='1_IlzlQDYUgUECpNJhSMEJLBqXalOOwguums1W0lP3rs';
-const TABS=['요약','주모임 명단','연도별','회합별'];
+const TABS=['요약','주모임 명단','월간 보고','연도별','회합별'];
 const DATA={};let CUR=TABS[0];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const GID={'요약':7001,'연도별':7002,'회합별':7003,'주모임 명단':7004};
+const GID={'요약':7001,'연도별':7002,'회합별':7003,'주모임 명단':7004,'월간 보고':7005};
 function parseCSV(t){const rows=[];let r=[],f='',q=false;
   for(let i=0;i<t.length;i++){const c=t[i];
     if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
