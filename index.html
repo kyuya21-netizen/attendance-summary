@@ -8,6 +8,7 @@
 :root{--bg:#EDF0F6;--surface:#fff;--ink:#17203A;--muted:#58627E;--line:#D5DAE6;--navy:#1C2541;--chalk:#F3F5FA;--head:#E8EDF7;--gold:#8A5A00}
 @media(prefers-color-scheme:dark){:root{--bg:#0E1424;--surface:#161E36;--ink:#E7EBF7;--muted:#98A2C0;--line:#273154;--navy:#243063;--head:#1E2748;--gold:#E8B84F}}
 *{box-sizing:border-box}
+html,body{overflow-x:hidden}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;padding-bottom:80px}
 header{background:var(--navy);color:var(--chalk);padding:18px 16px}
 header h1{margin:0;font-size:22px}
@@ -27,12 +28,13 @@ tr.tot td{font-weight:700}
 .mc b{font-size:16px}.mc .c{float:right;color:var(--muted);font-size:13px}
 .mc .n{margin:6px 0 0;font-size:13px;line-height:1.55;word-break:keep-all}
 .mc .n i{font-style:normal;color:var(--muted);margin-right:6px}
+.pr{padding:10px 0;border-top:1px solid var(--line)}.pr:first-child{border-top:0}.pr b{font-size:15px}.pr .c{float:right;font-weight:700}.pr .n{margin:3px 0 0;font-size:13px;color:var(--muted)}
 .tag{display:inline-block;font-size:12px;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:0 8px;margin-left:6px;vertical-align:middle}
 nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0)}
 nav button{flex:1;height:56px;border:0;background:none;color:var(--muted);font-size:14px}
 nav button.on{color:var(--ink);font-weight:700;box-shadow:inset 0 3px 0 var(--gold)}
 .bar{display:flex;gap:8px;margin-bottom:12px}
-.bar input{flex:1;height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--surface);color:var(--ink);font:inherit}
+.bar input{flex:1;min-width:0;width:100%;height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--surface);color:var(--ink);font:inherit}
 .bar button{white-space:nowrap;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:0 14px;font:inherit}
 .msg{text-align:center;color:var(--muted);padding:30px 8px}
 </style>
@@ -47,7 +49,22 @@ const TABS=['요약','연도별','회합별'];
 const DATA={};let CUR=TABS[0];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-async function load(name){
+const GID={'요약':7001,'연도별':7002,'회합별':7003};
+function parseCSV(t){const rows=[];let r=[],f='',q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;
+    else if(c===','){r.push(f);f=''}
+    else if(c==='\n'){r.push(f);rows.push(r);r=[];f=''}
+    else if(c!=='\r')f+=c}
+  if(f!==''||r.length){r.push(f);rows.push(r)}
+  const n=Math.max(...rows.map(x=>x.length));return rows.map(x=>Array.from({length:n},(_,i)=>x[i]||''))}
+async function loadCsv(name){
+  const r=await fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/export?format=csv&gid='+GID[name]+'&_='+Date.now(),{cache:'no-store'});
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const t=await r.text();if(/^\s*<!doctype html|^\s*<html/i.test(t))throw new Error('not csv');
+  return parseCSV(t)}
+async function loadJson(name){
   const url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&headers=0&sheet='+encodeURIComponent(name)+'&_='+Date.now();
   const r=await fetch(url,{cache:'no-store'});
   if(!r.ok)throw new Error('HTTP '+r.status);
@@ -57,6 +74,7 @@ async function load(name){
   const n=j.table.cols.length;
   return j.table.rows.map(row=>{const c=row.c||[];return Array.from({length:n},(_,i)=>{const x=c[i];if(!x||x.v==null)return'';return x.f!=null?String(x.f):String(x.v)})});
 }
+async function load(name){try{return await loadCsv(name)}catch(e){return await loadJson(name)}}
 const SHORT={'회합 횟수':'횟수','주모임 참석':'주','타모임 참석':'타','총 참석':'총','주모임 출석':'주'};
 function meetCards(rows,q){
   const out=[];
@@ -72,24 +90,27 @@ function render(){
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
   if(CUR==='회합별'){$('#view').innerHTML=meetCards(rows,q);return}
   const upd=$('#upd').textContent;
-  let html='',open=false,hdrNext=false,title=true,bigNext=false;
-  const close=()=>{if(open){html+='</tbody></table></div></section>';open=false}};
+  let html='',open=false,hdrNext=false,title=true,bigNext=false,person=false,pHead=[];
+  const close=()=>{if(open){html+=person?'</div></section>':'</tbody></table></div></section>';open=false}};
   rows.forEach(r=>{
     const cells=r.map(x=>x.trim()),ne=cells.filter(Boolean);
-    if(!ne.length){close();hdrNext=false;bigNext=false;return}
+    if(!ne.length){close();person=false;hdrNext=false;bigNext=false;return}
     if(ne.length===1&&cells[0]){
       if(title){title=false;return}
       if(cells[0]===upd){return}
       if(cells[0].length>22||/^최근 회합/.test(cells[0])){html+='<p class="sub">'+esc(cells[0])+'</p>';return}
-      close();html+='<section class="panel"><h2>'+esc(cells[0])+'</h2><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=!/^다음 잔치/.test(cells[0]);bigNext=/^다음 잔치/.test(cells[0]);return}
+      close();person=false;html+='<section class="panel"><h2>'+esc(cells[0])+'</h2><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=!/^다음 잔치/.test(cells[0]);bigNext=/^다음 잔치/.test(cells[0]);return}
     if(bigNext){html+='</tbody></table></div><p class="big">'+esc(cells[0])+'</p><p class="dd">'+esc(cells[1]||'')+'</p><div style="overflow-x:auto"><table><tbody>';bigNext=false;hdrNext=true;return}
     if(!open){html+='<section class="panel"><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true}
     const isTot=cells[0]==='총계',hit=!q||cells.join('').replace(/\s+/g,'').includes(q);
+    if(hdrNext&&cells[0]==='이름'&&cells.length>=9){pHead=cells;person=true;html=html.replace(/<div style="overflow-x:auto"><table><tbody>$/,'<div>');hdrNext=false;return}
+    if(person){if(!hit)return;const y=k=>(pHead[k]||'').split(' ')[0],v=(a,b)=>cells[a]?cells[a]+'회 '+(cells[b]||'-'):'-';
+      html+='<div class="pr"><span class="c">누적 '+esc(cells[10]||'-')+'</span><b>'+esc(cells[0])+'</b> <span class="sub" style="margin:0">'+esc(cells[1])+'</span><p class="n">'+[2,4,6].map(k=>esc(y(k))+' '+(cells[k]?esc(cells[k])+'회 '+esc(cells[k+1]||'-'):'-')).join(' · ')+' · 누적 '+esc(cells[8]||'-')+'/'+esc(cells[9]||'-')+'</p></div>';return}
     if(hdrNext){html+='<tr>'+cells.map(c=>'<th>'+esc(SHORT[c]||c)+'</th>').join('')+'</tr>';hdrNext=false;return}
     if(!hit)return;
     html+='<tr'+(isTot?' class="tot"':'')+'>'+cells.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>';
   });
-  if(open)html+='</tbody></table></div></section>';
+  close();
   $('#view').innerHTML=html||'<p class="msg">내용이 없어요.</p>';
 }
 async function loadAll(){
