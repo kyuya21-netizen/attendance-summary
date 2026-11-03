@@ -36,12 +36,13 @@ nav button.on{color:var(--ink);font-weight:700;box-shadow:inset 0 3px 0 var(--go
 .bar{display:flex;gap:8px;margin-bottom:12px}
 .bar input{flex:1;min-width:0;width:100%;height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--surface);color:var(--ink);font:inherit}
 .bar button{white-space:nowrap;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:0 14px;font:inherit}
+.yr{display:flex;gap:8px;margin:0 0 12px;overflow-x:auto}.yr button{white-space:nowrap;height:36px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);padding:0 16px;font:inherit}.yr button.on{background:var(--ink);color:var(--surface);font-weight:700}
 .msg{text-align:center;color:var(--muted);padding:30px 8px}
 </style>
 </head>
 <body>
 <header><h1>회합 출석 요약</h1><p id="upd">불러오는 중…</p></header>
-<main><div class="bar"><input id="q" type="search" placeholder="검색 (이름, 날짜, 회차)" autocomplete="off"><button id="rf">새로고침</button></div><div id="view"><p class="msg">불러오는 중…</p></div></main>
+<main><div class="bar"><input id="q" type="search" placeholder="검색 (이름, 날짜, 회차)" autocomplete="off"><button id="rf">새로고침</button></div><div class="yr" id="yr" hidden></div><div id="view"><p class="msg">불러오는 중…</p></div></main>
 <nav id="nav"></nav>
 <script>
 const SHEET_ID='1_IlzlQDYUgUECpNJhSMEJLBqXalOOwguums1W0lP3rs';
@@ -76,10 +77,11 @@ async function loadJson(name){
 }
 async function load(name){try{return await loadCsv(name)}catch(e){return await loadJson(name)}}
 const SHORT={'회합 횟수':'횟수','주모임 참석':'주','타모임 참석':'타','총 참석':'총','주모임 출석':'주'};
+let YEAR='';
 function meetCards(rows,q){
   const out=[];
   rows.slice(2).forEach(r=>{const c=r.map(x=>x.trim());if(!c[0])return;
-    const txt=c.join(' ');if(q&&!txt.replace(/\s+/g,'').includes(q))return;
+    if(YEAR&&!c[1].startsWith(YEAR))return;const txt=c.join(' ');if(q&&!txt.replace(/\s+/g,'').includes(q))return;
     const f=(c[6]&&c[6]!=='0')?'<span class="tag">잔치 '+esc(c[6])+'</span>':'',nw=(c[5]&&c[5]!=='0')?'<span class="tag">신규 '+esc(c[5])+'</span>':'';
     out.push('<div class="mc"><span class="c">주 '+esc(c[2])+' · 타 '+esc(c[3])+' · 총 '+esc(c[4])+'</span><b>'+esc(c[0])+'회</b> <span class="sub" style="margin:0">'+esc(c[1])+'</span>'+nw+f
       +(c[7]?'<p class="n"><i>주모임</i>'+esc(c[7])+'</p>':'')+(c[8]?'<p class="n"><i>타모임</i>'+esc(c[8])+'</p>':'')+(c[9]?'<p class="n"><i>잔치</i>'+esc(c[9])+'</p>':'')+'</div>');});
@@ -88,6 +90,8 @@ function meetCards(rows,q){
 function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
+  const yb=$('#yr'),yrOn=CUR==='회합별'||CUR==='월간 보고';yb.hidden=!yrOn;
+  if(yrOn){yb.innerHTML=['','2026','2025','2024'].map(y=>'<button data-y="'+y+'"'+(y===YEAR?' class="on"':'')+'>'+(y?y+'년':'전체')+'</button>').join('')}
   if(CUR==='회합별'){$('#view').innerHTML=meetCards(rows,q);return}
   const upd=$('#upd').textContent;
   let html='',open=false,hdrNext=false,title=true,bigNext=false,person=false,pHead=[];
@@ -102,7 +106,7 @@ function render(){
       close();person=false;html+='<section class="panel"><h2>'+esc(cells[0])+'</h2><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=!/^다음 잔치/.test(cells[0]);bigNext=/^다음 잔치/.test(cells[0]);return}
     if(bigNext){html+='</tbody></table></div><p class="big">'+esc(cells[0])+'</p><p class="dd">'+esc(cells[1]||'')+'</p><div style="overflow-x:auto"><table><tbody>';bigNext=false;hdrNext=true;return}
     if(!open){html+='<section class="panel"><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true}
-    const isTot=cells[0]==='총계',hit=!q||cells.join('').replace(/\s+/g,'').includes(q);
+    const isTot=cells[0]==='총계',hit=(!q||cells.join('').replace(/\s+/g,'').includes(q))&&!(CUR==='월간 보고'&&YEAR&&/^\d{4}\./.test(cells[0])&&!cells[0].startsWith(YEAR));
     if(hdrNext&&cells[0]==='이름'&&cells.length>=9){pHead=cells;person=true;html=html.replace(/<div style="overflow-x:auto"><table><tbody>$/,'<div>');hdrNext=false;return}
     if(person){if(!hit)return;const y=k=>(pHead[k]||'').split(' ')[0],v=(a,b)=>cells[a]?cells[a]+'회 '+(cells[b]||'-'):'-';
       html+='<div class="pr"><span class="c">누적 '+esc(cells[10]||'-')+'</span><b>'+esc(cells[0])+'</b> <span class="sub" style="margin:0">'+esc(cells[1])+'</span><p class="n">'+[2,4,6].map(k=>esc(y(k))+' '+(cells[k]?esc(cells[k])+'회 '+esc(cells[k+1]||'-'):'-')).join(' · ')+' · 누적 '+esc(cells[8]||'-')+'/'+esc(cells[9]||'-')+'</p></div>';return}
@@ -128,6 +132,7 @@ async function loadAll(){
 $('#nav').innerHTML=TABS.map(t=>'<button data-t="'+t+'">'+t+'</button>').join('');
 $('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){CUR=b.dataset.t;render();scrollTo(0,0)}});
 $('#q').addEventListener('input',render);
+$('#yr').addEventListener('click',e=>{const b=e.target.closest('button');if(b){YEAR=b.dataset.y;render()}});
 $('#rf').addEventListener('click',loadAll);
 loadAll();
 </script>
