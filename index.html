@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>회합 출석 요약</title>
+<style>
+:root{--bg:#EDF0F6;--surface:#fff;--ink:#17203A;--muted:#58627E;--line:#D5DAE6;--navy:#1C2541;--chalk:#F3F5FA;--head:#E8EDF7;--gold:#8A5A00}
+@media(prefers-color-scheme:dark){:root{--bg:#0E1424;--surface:#161E36;--ink:#E7EBF7;--muted:#98A2C0;--line:#273154;--navy:#243063;--head:#1E2748;--gold:#E8B84F}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;padding-bottom:80px}
+header{background:var(--navy);color:var(--chalk);padding:18px 16px}
+header h1{margin:0;font-size:22px}
+header p{margin:4px 0 0;font-size:13px;opacity:.85}
+main{max-width:720px;margin:0 auto;padding:14px 16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:14px;overflow-x:auto}
+h2{margin:0 0 8px;font-size:16px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 6px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{padding:6px 8px;border-top:1px solid var(--line);text-align:center;vertical-align:top}
+th{background:var(--head);font-size:13px;border-top:0}
+td:first-child,th:first-child{text-align:left}
+td.names{text-align:left;min-width:220px;font-size:13px}
+tr.tot td{font-weight:700}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0)}
+nav button{flex:1;height:56px;border:0;background:none;color:var(--muted);font-size:14px}
+nav button.on{color:var(--ink);font-weight:700;box-shadow:inset 0 3px 0 var(--gold)}
+.bar{display:flex;gap:8px;margin-bottom:12px}
+.bar input{flex:1;height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--surface);color:var(--ink);font:inherit}
+.bar button{height:42px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:0 14px;font:inherit}
+.msg{text-align:center;color:var(--muted);padding:30px 8px}
+</style>
+</head>
+<body>
+<header><h1>회합 출석 요약</h1><p id="upd">불러오는 중…</p></header>
+<main><div class="bar"><input id="q" type="search" placeholder="검색 (이름, 날짜, 회차)" autocomplete="off"><button id="rf">새로고침</button></div><div id="view"><p class="msg">불러오는 중…</p></div></main>
+<nav id="nav"></nav>
+<script>
+const SHEET_ID='1_IlzlQDYUgUECpNJhSMEJLBqXalOOwguums1W0lP3rs';
+const TABS=['요약','연도별','회합별'];
+const DATA={};let CUR=TABS[0];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function load(name){
+  const url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&headers=0&sheet='+encodeURIComponent(name)+'&_='+Date.now();
+  const r=await fetch(url,{cache:'no-store'});
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const t=await r.text();
+  const j=JSON.parse(t.slice(t.indexOf('(')+1,t.lastIndexOf(')')));
+  if(j.status==='error')throw new Error('sheet error');
+  const n=j.table.cols.length;
+  return j.table.rows.map(row=>{const c=row.c||[];return Array.from({length:n},(_,i)=>{const x=c[i];if(!x||x.v==null)return'';return x.f!=null?String(x.f):String(x.v)})});
+}
+function render(){
+  const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
+  let html='',open=false,hdrNext=false,title=true;
+  const close=()=>{if(open){html+='</tbody></table></section>';open=false}};
+  rows.forEach((r,ri)=>{
+    const cells=r.map(x=>x.trim()),ne=cells.filter(Boolean);
+    if(!ne.length){close();hdrNext=false;return}
+    if(ne.length===1&&cells[0]){
+      if(title){title=false;return}
+      if(/기준|최근 회합/.test(cells[0])){close();html+='<p class="sub">'+esc(cells[0])+'</p>';return}
+      close();html+='<section class="panel"><h2>'+esc(cells[0])+'</h2>';open='h';hdrNext=true;html+='<table><tbody>';open=true;return}
+    if(!open){html+='<section class="panel"><table><tbody>';open=true;hdrNext=true}
+    const isTot=cells[0]==='총계';
+    const hit=!q||cells.join('').replace(/\s+/g,'').includes(q);
+    if(hdrNext){html+='<tr>'+cells.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr>';hdrNext=false;return}
+    if(!hit)return;
+    html+='<tr'+(isTot?' class="tot"':'')+'>'+cells.map(c=>'<td'+(c.length>14?' class="names"':'')+'>'+esc(c)+'</td>').join('')+'</tr>';
+  });
+  close();
+  $('#view').innerHTML=html||'<p class="msg">내용이 없어요.</p>';
+}
+async function loadAll(){
+  $('#view').innerHTML='<p class="msg">불러오는 중…</p>';
+  try{
+    for(const t of TABS)DATA[t]=await load(t);
+    const sub=(DATA['요약']||[]).map(r=>r[0]).find(x=>/기준/.test(x));
+    $('#upd').textContent=sub||'';
+    render();
+  }catch(e){
+    $('#view').innerHTML='<p class="msg">데이터를 불러오지 못했어요.<br>스프레드시트가 "링크가 있는 모든 사용자 – 뷰어"로 공유돼 있는지 확인해 주세요.</p>';
+    $('#upd').textContent='';
+  }
+}
+$('#nav').innerHTML=TABS.map(t=>'<button data-t="'+t+'">'+t+'</button>').join('');
+$('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){CUR=b.dataset.t;render();scrollTo(0,0)}});
+$('#q').addEventListener('input',render);
+$('#rf').addEventListener('click',loadAll);
+loadAll();
+</script>
+</body>
+</html>
