@@ -11,7 +11,9 @@
 html,body{overflow-x:hidden}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;padding-bottom:80px}
 header{background:var(--navy);color:var(--chalk);padding:18px 16px}
-header h1{margin:0;font-size:22px}
+header{position:relative}
+#zm{position:absolute;right:12px;top:14px;display:flex;gap:6px}#zm button{min-width:40px;height:34px;border:1px solid var(--chalk);border-radius:8px;background:transparent;color:var(--chalk);font-size:15px;font-weight:700;padding:0 8px}
+header h1{margin:0;font-size:22px;padding-right:96px}
 header p{margin:4px 0 0;font-size:13px;opacity:.85}
 main{max-width:720px;margin:0 auto;padding:14px 16px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:14px;overflow-x:auto}
@@ -42,7 +44,7 @@ nav button.on{color:var(--ink);font-weight:700;box-shadow:inset 0 3px 0 var(--go
 </style>
 </head>
 <body>
-<header><h1>수원매산GA 회합 출석 요약</h1><p id="upd">불러오는 중…</p></header>
+<header><div id="zm"><button id="zo" aria-label="글씨 작게">가-</button><button id="zi" aria-label="글씨 크게">가+</button></div><h1>수원매산GA 회합 출석 요약</h1><p id="upd">불러오는 중…</p></header>
 <main><div class="bar"><input id="q" type="search" placeholder="검색 (이름, 날짜, 회차)" autocomplete="off"><button id="rf">새로고침</button></div><div class="yr" id="yr" hidden></div><div id="view"><p class="msg">불러오는 중…</p></div></main>
 <nav id="nav"></nav>
 <script>
@@ -161,6 +163,10 @@ $('#q').addEventListener('input',render);
 $('#yr').addEventListener('click',e=>{const b=e.target.closest('button');if(b){YEAR=b.dataset.y;render()}});
 $('#rf').addEventListener('click',loadAll);
 loadAll();
+
+(function(){var L=[1,1.15,1.3,1.5],i=0;try{i=Math.max(0,Math.min(3,+localStorage.getItem('zoomLv')||0))}catch(e){}
+function ap(){document.body.style.zoom=L[i]===1?'':L[i];try{localStorage.setItem('zoomLv',i)}catch(e){}document.getElementById('zo').disabled=i===0;document.getElementById('zi').disabled=i===3}
+document.getElementById('zo').onclick=function(){if(i>0){i--;ap()}};document.getElementById('zi').onclick=function(){if(i<3){i++;ap()}};ap()})();
 </script>
 </body>
 </html>
