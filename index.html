@@ -37,6 +37,7 @@ nav button.on{color:var(--ink);font-weight:700;box-shadow:inset 0 3px 0 var(--go
 .bar input{flex:1;min-width:0;width:100%;height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--surface);color:var(--ink);font:inherit}
 .bar button{white-space:nowrap;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:0 14px;font:inherit}
 .yr{display:flex;gap:8px;margin:0 0 12px;overflow-x:auto}.yr button{white-space:nowrap;height:36px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);padding:0 16px;font:inherit}.yr button.on{background:var(--ink);color:var(--surface);font-weight:700}
+.fn{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}tr.lg td{text-align:left!important;white-space:normal;background:var(--head);font-size:13px}
 .msg{text-align:center;color:var(--muted);padding:30px 8px}
 </style>
 </head>
@@ -116,6 +117,7 @@ function render(){
   });
   close();
   $('#view').innerHTML=html||'<p class="msg">내용이 없어요.</p>';
+  document.querySelectorAll('#view table').forEach(t=>{const h=[...t.querySelectorAll('th')].map(x=>x.textContent);if(h[0]==='이름'&&h[2]==='날짜')t.querySelectorAll('tr').forEach(tr=>{const d=tr.querySelector('td');if(d)d.classList.add('fn')})});
 }
 async function loadAll(){
   $('#view').innerHTML='<p class="msg">불러오는 중…</p>';
@@ -131,6 +133,9 @@ async function loadAll(){
 }
 $('#nav').innerHTML=TABS.map(t=>'<button data-t="'+t+'">'+t+'</button>').join('');
 $('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){CUR=b.dataset.t;render();scrollTo(0,0)}});
+$('#view').addEventListener('click',e=>{const td=e.target.closest('td.fn');if(!td)return;const tr=td.parentElement,nx=tr.nextElementSibling;if(nx&&nx.classList.contains('lg')){nx.remove();return}
+  const nm=td.textContent.trim(),r=(DATA['주모임 명단']||[]).slice(3).find(x=>x[0].trim()===nm);
+  const n=document.createElement('tr');n.className='lg';n.innerHTML='<td colspan="'+tr.children.length+'">'+esc(nm)+' · 마지막 도박일 <b>'+esc(r&&r[2].trim()?r[2].trim():'기록 없음')+'</b>'+(r&&r[1]?' · 최초참석 '+esc(r[1].trim()):'')+'</td>';tr.after(n)});
 $('#q').addEventListener('input',render);
 $('#yr').addEventListener('click',e=>{const b=e.target.closest('button');if(b){YEAR=b.dataset.y;render()}});
 $('#rf').addEventListener('click',loadAll);
