@@ -16,18 +16,24 @@ main{max-width:720px;margin:0 auto;padding:14px 16px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:14px;overflow-x:auto}
 h2{margin:0 0 8px;font-size:16px}
 .sub{color:var(--muted);font-size:13px;margin:0 0 6px}
-table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:14px}
-th,td{padding:6px 8px;border-top:1px solid var(--line);text-align:center;vertical-align:top}
-th{background:var(--head);font-size:13px;border-top:0}
-td:first-child,th:first-child{text-align:left}
-td.names{text-align:left;min-width:220px;font-size:13px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:13px;white-space:nowrap}
+th,td{padding:7px 8px;border-top:1px solid var(--line);text-align:center}
+th{background:var(--head);font-size:12px;font-weight:600;border-top:0;color:var(--muted)}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surface)}
+th:first-child{background:var(--head)}
 tr.tot td{font-weight:700}
+.big{font-size:22px;font-weight:700;margin:0}.dd{margin:0 0 8px;color:var(--muted);font-size:14px}
+.mc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.mc b{font-size:16px}.mc .c{float:right;color:var(--muted);font-size:13px}
+.mc .n{margin:6px 0 0;font-size:13px;line-height:1.55;word-break:keep-all}
+.mc .n i{font-style:normal;color:var(--muted);margin-right:6px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:0 8px;margin-left:6px;vertical-align:middle}
 nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0)}
 nav button{flex:1;height:56px;border:0;background:none;color:var(--muted);font-size:14px}
 nav button.on{color:var(--ink);font-weight:700;box-shadow:inset 0 3px 0 var(--gold)}
 .bar{display:flex;gap:8px;margin-bottom:12px}
 .bar input{flex:1;height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--surface);color:var(--ink);font:inherit}
-.bar button{height:42px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:0 14px;font:inherit}
+.bar button{white-space:nowrap;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:0 14px;font:inherit}
 .msg{text-align:center;color:var(--muted);padding:30px 8px}
 </style>
 </head>
@@ -51,26 +57,39 @@ async function load(name){
   const n=j.table.cols.length;
   return j.table.rows.map(row=>{const c=row.c||[];return Array.from({length:n},(_,i)=>{const x=c[i];if(!x||x.v==null)return'';return x.f!=null?String(x.f):String(x.v)})});
 }
+const SHORT={'회합 횟수':'횟수','주모임 참석':'주','타모임 참석':'타','총 참석':'총','주모임 출석':'주'};
+function meetCards(rows,q){
+  const out=[];
+  rows.slice(2).forEach(r=>{const c=r.map(x=>x.trim());if(!c[0])return;
+    const txt=c.join(' ');if(q&&!txt.replace(/\s+/g,'').includes(q))return;
+    const f=(c[6]&&c[6]!=='0')?'<span class="tag">잔치 '+esc(c[6])+'</span>':'',nw=(c[5]&&c[5]!=='0')?'<span class="tag">신규 '+esc(c[5])+'</span>':'';
+    out.push('<div class="mc"><span class="c">주 '+esc(c[2])+' · 타 '+esc(c[3])+' · 총 '+esc(c[4])+'</span><b>'+esc(c[0])+'회</b> <span class="sub" style="margin:0">'+esc(c[1])+'</span>'+nw+f
+      +(c[7]?'<p class="n"><i>주모임</i>'+esc(c[7])+'</p>':'')+(c[8]?'<p class="n"><i>타모임</i>'+esc(c[8])+'</p>':'')+(c[9]?'<p class="n"><i>잔치</i>'+esc(c[9])+'</p>':'')+'</div>');});
+  return out.join('')||'<p class="msg">검색 결과가 없어요.</p>';
+}
 function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
-  let html='',open=false,hdrNext=false,title=true;
-  const close=()=>{if(open){html+='</tbody></table></section>';open=false}};
-  rows.forEach((r,ri)=>{
+  if(CUR==='회합별'){$('#view').innerHTML=meetCards(rows,q);return}
+  const upd=$('#upd').textContent;
+  let html='',open=false,hdrNext=false,title=true,bigNext=false;
+  const close=()=>{if(open){html+='</tbody></table></div></section>';open=false}};
+  rows.forEach(r=>{
     const cells=r.map(x=>x.trim()),ne=cells.filter(Boolean);
-    if(!ne.length){close();hdrNext=false;return}
+    if(!ne.length){close();hdrNext=false;bigNext=false;return}
     if(ne.length===1&&cells[0]){
       if(title){title=false;return}
-      if(/기준|최근 회합/.test(cells[0])){close();html+='<p class="sub">'+esc(cells[0])+'</p>';return}
-      close();html+='<section class="panel"><h2>'+esc(cells[0])+'</h2>';open='h';hdrNext=true;html+='<table><tbody>';open=true;return}
-    if(!open){html+='<section class="panel"><table><tbody>';open=true;hdrNext=true}
-    const isTot=cells[0]==='총계';
-    const hit=!q||cells.join('').replace(/\s+/g,'').includes(q);
-    if(hdrNext){html+='<tr>'+cells.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr>';hdrNext=false;return}
+      if(cells[0]===upd){return}
+      if(cells[0].length>22||/^최근 회합/.test(cells[0])){html+='<p class="sub">'+esc(cells[0])+'</p>';return}
+      close();html+='<section class="panel"><h2>'+esc(cells[0])+'</h2><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=!/^다음 잔치/.test(cells[0]);bigNext=/^다음 잔치/.test(cells[0]);return}
+    if(bigNext){html+='</tbody></table></div><p class="big">'+esc(cells[0])+'</p><p class="dd">'+esc(cells[1]||'')+'</p><div style="overflow-x:auto"><table><tbody>';bigNext=false;hdrNext=true;return}
+    if(!open){html+='<section class="panel"><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true}
+    const isTot=cells[0]==='총계',hit=!q||cells.join('').replace(/\s+/g,'').includes(q);
+    if(hdrNext){html+='<tr>'+cells.map(c=>'<th>'+esc(SHORT[c]||c)+'</th>').join('')+'</tr>';hdrNext=false;return}
     if(!hit)return;
-    html+='<tr'+(isTot?' class="tot"':'')+'>'+cells.map(c=>'<td'+(c.length>14?' class="names"':'')+'>'+esc(c)+'</td>').join('')+'</tr>';
+    html+='<tr'+(isTot?' class="tot"':'')+'>'+cells.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>';
   });
-  close();
+  if(open)html+='</tbody></table></div></section>';
   $('#view').innerHTML=html||'<p class="msg">내용이 없어요.</p>';
 }
 async function loadAll(){
