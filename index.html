@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>수원매산GA 회합 출석 요약</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1C2541">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="회합 출석"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -66,12 +71,15 @@ nav button.on{background:var(--navy);color:#fff;font-weight:700}
 .rk{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:50%;font-weight:700;font-size:12px}
 .rk.r1{background:#E8B84F;color:#3A2700}.rk.r2{background:#C9CFDB;color:#25304D}.rk.r3{background:#D9A37A;color:#3B2110}
 td.pc{position:relative;font-weight:700}
-@media print{nav,#zm{display:none}}
+#a2{display:none;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:var(--surface);border:1px solid var(--gold2);box-shadow:var(--shadow);font-size:13.5px;line-height:1.55}
+#a2 b{font-family:var(--serif)}#a2 .r{display:flex;gap:8px;margin-top:8px}
+#a2 button{height:34px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 14px;font:inherit;font-size:13px;cursor:pointer}#a2 button.go{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+@media print{nav,#zm,#a2{display:none}}
 </style>
 </head>
 <body>
 <header><div id="zm"><button id="zo" aria-label="글씨 작게">가-</button><button id="zi" aria-label="글씨 크게">가+</button></div><p class="eb">SUWON MAESAN · GA</p><h1>수원매산GA 회합 출석 요약</h1><p><span id="upd">불러오는 중…</span></p></header>
-<main><div class="bar"><input id="q" type="search" placeholder="검색 (이름, 날짜, 회차)" autocomplete="off"><button id="rf">새로고침</button></div><div class="yr" id="yr" hidden></div><div id="view"><p class="msg">불러오는 중…</p></div></main>
+<main><div id="a2"></div><div class="bar"><input id="q" type="search" placeholder="검색 (이름, 날짜, 회차)" autocomplete="off"><button id="rf">새로고침</button></div><div class="yr" id="yr" hidden></div><div id="view"><p class="msg">불러오는 중…</p></div></main>
 <nav id="nav"></nav>
 <script>
 const SHEET_ID='1_IlzlQDYUgUECpNJhSMEJLBqXalOOwguums1W0lP3rs';
@@ -195,6 +203,19 @@ loadAll();
 (function(){var L=[1,1.15,1.3,1.5],i=0;try{i=Math.max(0,Math.min(3,+localStorage.getItem('zoomLv')||0))}catch(e){}
 function ap(){document.body.style.zoom=L[i]===1?'':L[i];try{localStorage.setItem('zoomLv',i)}catch(e){}document.getElementById('zo').disabled=i===0;document.getElementById('zi').disabled=i===3}
 document.getElementById('zo').onclick=function(){if(i>0){i--;ap()}};document.getElementById('zi').onclick=function(){if(i<3){i++;ap()}};ap()})();
+
+(function(){var box=document.getElementById('a2'),ua=navigator.userAgent,dp=null;
+var inst=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
+var hid=false;try{hid=localStorage.getItem('a2hs')==='1'}catch(e){}
+if(inst||hid)return;
+function show(h,btn){box.innerHTML=h+'<div class="r">'+(btn?'<button class="go" id="a2i">홈 화면에 추가</button>':'')+'<button id="a2x">다시 보지 않기</button></div>';box.style.display='block';
+document.getElementById('a2x').onclick=function(){box.style.display='none';try{localStorage.setItem('a2hs','1')}catch(e){}};
+var i=document.getElementById('a2i');if(i)i.onclick=function(){if(dp){dp.prompt();dp.userChoice.finally(function(){box.style.display='none'})}}}
+var T='<b>홈 화면에 추가하면 앱처럼 바로 열려요</b><br>';
+if(/KAKAOTALK|NAVER\(inapp|Line\//i.test(ua))show(T+'지금은 카카오톡 안에서 열려 있어요. 오른쪽 아래(또는 위) 메뉴에서 <b>다른 브라우저로 열기</b>를 누른 뒤 홈 화면에 추가해 주세요.');
+else if(/iPhone|iPad|iPod/i.test(ua))show(T+'아래 <b>공유 버튼(□↑)</b>을 누르고 <b>홈 화면에 추가</b>를 선택하세요. 사파리에서만 돼요.');
+else if(/Android/i.test(ua)){show(T+'오른쪽 위 <b>⋮ 메뉴</b> → <b>홈 화면에 추가</b>(또는 앱 설치)를 선택하세요.');window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;show(T+'버튼을 누르면 바로 추가돼요.',true)})}
+})();
 </script>
 </body>
 </html>
