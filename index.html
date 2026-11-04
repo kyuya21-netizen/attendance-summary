@@ -62,7 +62,15 @@ nav button.on{background:var(--navy);color:#fff;font-weight:700}
 .yr[hidden]{display:none}.yr{display:flex;gap:8px;margin:0 0 12px;overflow-x:auto;scrollbar-width:none}.yr::-webkit-scrollbar{display:none}.yr button{white-space:nowrap;height:36px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);padding:0 16px;font:inherit;font-size:14px;cursor:pointer}.yr button.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
 @media(prefers-color-scheme:dark){.yr button.on{background:var(--navy2);border-color:var(--navy2)}}
 .fn{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}tr.lg td{text-align:left!important;white-space:normal;background:var(--head)!important;font-size:13px}
-.hero h2::before{display:none}.hero h2{font-size:12.5px}.hero .jt.jf{margin:0 0 14px;padding:0 0 14px;border-top:0;border-bottom:1px solid rgba(255,255,255,.22)}
+.hero h2::before{display:none}.hero h2{font-size:12.5px;display:inline-block;vertical-align:middle;margin:0 10px 0 0}
+.hero .big,.hero .jt b{display:inline-block;vertical-align:middle;margin:0}.hero .dd,.hero .jt i{display:inline-block;vertical-align:middle;margin:0 0 0 8px}
+.hero .jt{margin:8px 0 0;padding-top:8px}.hero .jt.jf{margin:0 0 8px;padding:0 0 8px}.hero .jt b{margin:0 0 0 10px}
+.cele{margin:12px 0 4px;padding:14px 12px 8px;border-radius:16px;background:linear-gradient(180deg,#FFF6DC,#FFFDF5);border:1px solid #EBD79B}
+.cele .ct{text-align:center;font:700 16px/1.4 var(--serif);color:#7A4E00;margin:0 0 8px}
+.cele ul{list-style:none;margin:0;padding:0}.cele li{display:flex;align-items:center;gap:8px;padding:9px 4px;border-top:1px dashed #E3CC88}.cele li:first-child{border-top:0}
+.cele .em{font-size:20px}.cele li b{font-size:17px;color:#2B2110}.cele .kd{padding:2px 10px;border-radius:999px;background:var(--gold2);color:#1C2541;font-weight:700;font-size:12.5px}.cele li i{margin-left:auto;font-style:normal;color:#7A6A3A;font-size:14px}
+.cele .cnone{text-align:center;color:#7A6A3A;margin:6px 0 10px;font-size:14px}
+@media(prefers-color-scheme:dark){.cele{background:linear-gradient(180deg,#2A2540,#1D2238);border-color:#5B4B24}.cele .ct{color:#F0C766}.cele li{border-color:#4A4060}.cele li b{color:#F3F5FA}.cele li i,.cele .cnone{color:#C9BC93}}.hero .jt.jf{margin:0 0 14px;padding:0 0 14px;border-top:0;border-bottom:1px solid rgba(255,255,255,.22)}
 .msg{text-align:center;color:var(--muted);padding:34px 8px}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 14px 12px;box-shadow:var(--shadow);position:relative;overflow:hidden}
@@ -168,8 +176,8 @@ function render(){
   if(CUR==='회합별'){$('#view').innerHTML=meetCards(rows,q);return}
   if(CUR==='비상연락망'){$('#view').innerHTML=phoneCards(rows,q);return}
   const upd=$('#upd').textContent;
-  let html='',open=false,hdrNext=false,title=true,bigNext=false,person=false,pHead=[];
-  const close=()=>{if(open){html+=person?'</div></section>':'</tbody></table></div></section>';open=false}};
+  let html='',open=false,hdrNext=false,title=true,bigNext=false,person=false,cele=false,celeN=0,pHead=[];
+  const close=()=>{if(open){if(cele){html+=(celeN?'</ul>':'<p class="cnone">이번 달 잔치자는 없어요.</p>')+'</div></section>';cele=false;celeN=0}else html+=person?'</div></section>':'</tbody></table></div></section>';open=false}};
   rows.forEach(r=>{
     const cells=r.map(x=>x.trim()),ne=cells.filter(Boolean);
     if(!ne.length){close();person=false;hdrNext=false;bigNext=false;return}
@@ -178,9 +186,10 @@ function render(){
       if(cells[0]===upd){return}
       if(cells[0].length>22||/^최근 회합/.test(cells[0])){html+='<p class="sub">'+esc(cells[0])+'</p>';return}
       close();person=false;if(/^다음 잔치/.test(cells[0])){html+='<section class="panel"><div class="hero">'+meetHtml()+'<h2>'+esc(cells[0])+'</h2>';open=true;person=true;hdrNext=false;bigNext=true;return}html+='<section class="panel"><h2>'+esc(cells[0])+'</h2><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true;bigNext=false;return}
-    if(bigNext){html+='<p class="big">'+esc(cells[0])+'</p><p class="dd">'+esc(cells[1]||'')+'</p>'+jointHtml()+'</div><div style="overflow-x:auto"><table><tbody>';bigNext=false;hdrNext=true;person=false;return}
+    if(bigNext){html+='<p class="big">'+esc(cells[0])+'</p><p class="dd">'+esc(cells[1]||'')+'</p>'+jointHtml()+'</div><div class="cele"><div class="ct">🎉 '+(parseInt((cells[0].split('.')[1]||''),10)||'')+'월 잔치자 축하합니다! 🎉</div><ul>';cele=true;celeN=0;bigNext=false;hdrNext=true;person=false;return}
     if(!open){html+='<section class="panel"><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true}
     const isTot=cells[0]==='총계',hit=(!q||cells.join('').replace(/\s+/g,'').includes(q))&&!(CUR==='월간 보고'&&YEAR&&/^\d{4}\./.test(cells[0])&&!cells[0].startsWith(YEAR));
+    if(cele){if(hdrNext){hdrNext=false;return}celeN++;html+='<li><span class="em">'+(/주년/.test(cells[1])?'🎂':'🎉')+'</span><b>'+esc(cells[0])+'</b><span class="kd">'+esc(cells[1]||'')+'</span><i>'+esc((cells[2]||'').slice(5))+'</i></li>';return}
     if(hdrNext&&(cells[0]==='이름'||cells[0]==='익명')&&cells.length>=9){pHead=cells;person=true;html=html.replace(/<div style="overflow-x:auto"><table><tbody>$/,'<div>');hdrNext=false;return}
     if(person){if(!hit)return;const y=k=>(pHead[k]||'').split(' ')[0],v=(a,b)=>cells[a]?cells[a]+'회 '+(cells[b]||'-'):'-';
       html+='<div class="pr"><span class="c">누적 '+esc(cells[10]||'-')+'</span><b>'+esc(cells[0])+'</b> <span class="sub" style="margin:0">'+esc(cells[1])+'</span><p class="n">'+[2,4,6].map(k=>esc(y(k))+' '+(cells[k]?esc(cells[k])+'회 '+esc(cells[k+1]||'-'):'-')).join(' · ')+' · 누적 '+esc(cells[8]||'-')+'/'+esc(cells[9]||'-')+'</p></div>';return}
