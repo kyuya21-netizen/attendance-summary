@@ -149,6 +149,8 @@ function nextJoint(){const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth()
   for(let i=0;i<30;i++,m++){if((m%12+1)%2===0)continue;const e=new Date(y+Math.floor(m/12),m%12+1,0);while(e.getDay()!==4)e.setDate(e.getDate()-1);if(e>=t0)return{d:e,k:Math.round((e-t0)/864e5)}}return null}
 function jointHtml(){const j=nextJoint();if(!j)return '';const p=n=>String(n).padStart(2,'0');
   return '<div class="jt">다음 합동모임<b>'+j.d.getFullYear()+'.'+p(j.d.getMonth()+1)+'.'+p(j.d.getDate())+' (목)</b><i>'+(j.k===0?'오늘':'D-'+j.k)+'</i></div>'}
+function meetHtml(){const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate()),d=new Date(t0);d.setDate(d.getDate()+(4-d.getDay()+7)%7);const k=Math.round((d-t0)/864e5),p=n=>String(n).padStart(2,'0');
+  return '<div class="jt">다음 회합<b>'+d.getFullYear()+'.'+p(d.getMonth()+1)+'.'+p(d.getDate())+' (목)</b><i>'+(k===0?'오늘':'D-'+k)+'</i></div>'}
 function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
@@ -167,7 +169,7 @@ function render(){
       if(cells[0]===upd){return}
       if(cells[0].length>22||/^최근 회합/.test(cells[0])){html+='<p class="sub">'+esc(cells[0])+'</p>';return}
       close();person=false;if(/^다음 잔치/.test(cells[0])){html+='<section class="panel"><div class="hero"><h2>'+esc(cells[0])+'</h2>';open=true;person=true;hdrNext=false;bigNext=true;return}html+='<section class="panel"><h2>'+esc(cells[0])+'</h2><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true;bigNext=false;return}
-    if(bigNext){html+='<p class="big">'+esc(cells[0])+'</p><p class="dd">'+esc(cells[1]||'')+'</p>'+jointHtml()+'</div><div style="overflow-x:auto"><table><tbody>';bigNext=false;hdrNext=true;person=false;return}
+    if(bigNext){html+='<p class="big">'+esc(cells[0])+'</p><p class="dd">'+esc(cells[1]||'')+'</p>'+meetHtml()+jointHtml()+'</div><div style="overflow-x:auto"><table><tbody>';bigNext=false;hdrNext=true;person=false;return}
     if(!open){html+='<section class="panel"><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true}
     const isTot=cells[0]==='총계',hit=(!q||cells.join('').replace(/\s+/g,'').includes(q))&&!(CUR==='월간 보고'&&YEAR&&/^\d{4}\./.test(cells[0])&&!cells[0].startsWith(YEAR));
     if(hdrNext&&cells[0]==='이름'&&cells.length>=9){pHead=cells;person=true;html=html.replace(/<div style="overflow-x:auto"><table><tbody>$/,'<div>');hdrNext=false;return}
