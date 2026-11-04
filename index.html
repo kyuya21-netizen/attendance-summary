@@ -190,15 +190,9 @@ function calInner(){
     const past=new Date(y,m,d)<t0,td=isNow&&d===t0.getDate();
     if(ty[d])g+='<div><span class="cald '+ty[d]+(past?' p':'')+(td?' tdy':'')+'">'+d+'</span></div>';
     else g+='<div'+(td?' class="tdy"':'')+'>'+(td?'<span>'+d+'</span>':d)+'</div>'}
-  const mo=n=>n.getMonth()+1+'월 '+n.getDate()+'일 (목)',dd=n=>{const k=Math.round((n-t0)/864e5);return k===0?'오늘':'D-'+k};
-  const nm=new Date(t0);nm.setDate(nm.getDate()+(4-nm.getDay()+7)%7);
-  const nj=nextJoint(),rows=[['var(--navy2)','다음 회합',mo(nm),dd(nm)]];
-  if(SF){const fd=new Date(SF.y,SF.m,SF.d);rows.push(['var(--gold2)','다음 잔치',mo(fd).replace(' (목)',' ('+'일월화수목금토'[fd.getDay()]+')'),SF.dd||dd(fd)])}
-  if(nj)rows.push(['var(--ok)','다음 합동모임',mo(nj.d),dd(nj.d)]);
   return '<div class="calh"><button data-cm="-1" aria-label="이전 달">‹</button><b>'+y+'년 '+(m+1)+'월</b><button data-cm="1" aria-label="다음 달">›</button></div>'
     +'<div class="calg"><div class="calw"><div>일</div><div>월</div><div>화</div><div>수</div><div class="th">목</div><div>금</div><div>토</div></div><div class="calc">'+g+'</div></div>'
-    +'<div class="callg"><span><i style="background:var(--navy2)"></i>회합</span><span><i style="background:var(--gold2)"></i>잔치</span><span><i style="background:var(--ok)"></i>합동모임</span>'+(CM?'<button data-cm="0">이번 달</button>':'')+'</div>'
-    +'<div class="calr">'+rows.map(r=>'<div><span class="dot" style="background:'+r[0]+'"></span><span><b>'+r[1]+'</b><small>'+esc(r[2])+'</small></span><em>'+esc(r[3])+'</em></div>').join('')+'</div>'}
+    +'<div class="callg"><span><i style="background:var(--navy2)"></i>회합</span><span><i style="background:var(--gold2)"></i>잔치</span><span><i style="background:var(--ok)"></i>합동모임</span>'+(CM?'<button data-cm="0">이번 달</button>':'')+'</div>'}
 function phoneCards(rows,q){
   const t=(rows[0]||[''])[0].trim(),L=[];
   rows.slice(2).forEach(r=>{const c=r.map(x=>x.trim());if(!c[0]||!c[2])return;if(q&&!c.join('').replace(/\s+/g,'').includes(q))return;
