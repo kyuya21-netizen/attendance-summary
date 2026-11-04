@@ -86,6 +86,7 @@ nav button.on{background:var(--navy);color:#fff;font-weight:700}
 @media(prefers-color-scheme:dark){.cald.c{color:#0B1120}}
 .callg{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;align-items:center;padding:4px 10px 12px;font-size:13px;color:var(--muted)}.callg i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}.callg button{height:30px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--head);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
 .calr{border-top:1px solid var(--line);padding:2px 16px 4px}.calr>div{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}.calr>div:first-child{border-top:0}.calr .dot{width:12px;height:12px;border-radius:50%;flex:none}.calr b{display:block;font-size:17px}.calr small{display:block;color:var(--muted);font-size:13px}.calr em{margin-left:auto;font-style:normal;font-weight:700;font-size:13px;padding:2px 12px;border-radius:999px;background:var(--gold2);color:#1C2541;white-space:nowrap}
+.cele.nx{background:var(--head);border:1px dashed #D6C27A;margin-top:10px}.cele.nx .ct{font-size:15px}.cele .cnote{margin:4px 0 6px;text-align:center;font-size:13px;color:var(--muted)}
 .msg{text-align:center;color:var(--muted);padding:34px 8px}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 14px 12px;box-shadow:var(--shadow);position:relative;overflow:hidden}
@@ -183,6 +184,14 @@ function feastIn(y,m){const L=(DATA['주모임 명단']||[]).slice(3);
   for(const r of L){const a=((r[2]||'')+'').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);if(!a)continue;const ay=+a[1],am=+a[2]-1,ad=+a[3];
     if(am===m&&y>ay)return true;const h=new Date(ay,am,ad+100);if(h.getFullYear()===y&&h.getMonth()===m)return true}
   return false}
+function nextFeastHtml(){
+  const t=new Date(),b=new Date(t.getFullYear(),t.getMonth()+1,1),y=b.getFullYear(),m=b.getMonth(),out=[];
+  for(const r of (DATA['주모임 명단']||[]).slice(3)){const a=((r[2]||'')+'').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/),n=(r[0]||'').trim();if(!a||!n)continue;const ay=+a[1],am=+a[2]-1,ad=+a[3],lg=a[0];
+    if(am===m&&y>ay)out.push({n,k:(y-ay)+'주년',d:new Date(y,m,ad),lg});
+    const h=new Date(ay,am,ad+100);if(h.getFullYear()===y&&h.getMonth()===m)out.push({n,k:'100일',d:h,lg})}
+  if(!out.length)return '';out.sort((a,b)=>a.d-b.d||(a.n<b.n?-1:1));
+  const th=[];for(let d=1;d<=new Date(y,m+1,0).getDate();d++)if(new Date(y,m,d).getDay()===4)th.push(d);
+  return '<div class="cele nx"><div class="ct">📅 '+(m+1)+'월 잔치 예정자</div><ul>'+out.map(x=>'<li><span class="em">'+(x.k==='100일'?'🎉':'🎂')+'</span><b>'+esc(x.n)+'</b><span class="kd">'+x.k+'</span><i>마지막도박일 '+esc(x.lg)+'</i></li>').join('')+'</ul><p class="cnote">'+(m+1)+'월 '+th[2]+'일(목) 잔치 · 잔치 전까지는 모두 예정이에요.</p></div>'}
 function calInner(){
   const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate()),base=new Date(t0.getFullYear(),t0.getMonth()+CM,1),y=base.getFullYear(),m=base.getMonth();
   const dim=new Date(y,m+1,0).getDate(),lead=base.getDay(),ty={},ths=[];
@@ -238,7 +247,7 @@ function render(){
   if(CUR==='비상연락망'){$('#view').innerHTML=phoneCards(rows,q);return}
   const upd=$('#upd').textContent;
   let html='',open=false,hdrNext=false,title=true,bigNext=false,person=false,cele=false,celeN=0,pHead=[];
-  const close=()=>{if(open){if(cele){html+=(celeN?'</ul>':'<p class="cnone">이번 달 잔치자는 없어요.</p>')+'</div></section>';cele=false;celeN=0}else html+=person?'</div></section>':'</tbody></table></div></section>';open=false}};
+  const close=()=>{if(open){if(cele){html+=(celeN?'</ul>':'<p class="cnone">이번 달 잔치자는 없어요.</p>')+'</div>'+nextFeastHtml()+'</section>';cele=false;celeN=0}else html+=person?'</div></section>':'</tbody></table></div></section>';open=false}};
   rows.forEach(r=>{
     const cells=r.map(x=>x.trim()),ne=cells.filter(Boolean);
     if(!ne.length){close();person=false;hdrNext=false;bigNext=false;return}
