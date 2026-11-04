@@ -179,27 +179,28 @@ function phoneCards(rows,q){
   return '<section class="panel"><h2>'+esc(t||'비상연락망')+'</h2>'+(L.join('')||'<p class="msg">내용이 없어요.</p>')+'<p class="sub" style="margin:10px 0 0">번호를 누르면 전화가 걸려요.</p></section>'}
 const TOC=[['표지',1],['목차',3],['회복 12단계 프로그램',4],['일치 12단계 프로그램',5],['G.A. 동정',6],['한국GA 제19차 정기총회 회의록',7],['GA 운영위원회 회의록',8],['2026년 상반기 GA 재정감사 보고',9],['제69차 전국가을연수 결산',10],['각 통장 거래내역',14],['라이프라인(생명선) 가입자 명단',19],['한국 GA 수입',20],['2026년 08월 수입 및 지출 내역',22],['GA 책자 및 기념품 안내',23],['2026년 11월 잔치 및 행사 안내',24]];
 const DOCS=[
-  {i:'🎵',t:'축가 악보',s:'잔치 축가 · 누르면 열려요',pages:['chuka-score.png']},
+  {i:'🎵',t:'축가 악보',s:'잔치 축가 · 누르면 열려요',pages:['chuka-score.png'],fit:true},
   {i:'📰',t:'한국 GA 소식지 11월호',s:'2026년 11월 · 제331호 · 28쪽',pages:Array.from({length:28},(_,k)=>'docs/news-2026-11/p'+String(k+1).padStart(2,'0')+'.webp'),toc:TOC}];
 function libHtml(){
   return '<section class="panel lib"><div class="libb"><span>📚</span><div><b>자료실</b><small>함께 보는 자료를 모아 두었어요</small></div></div>'
     +DOCS.map((x,k)=>'<button class="song" data-doc="'+k+'"><span class="ic">'+x.i+'</span><span class="tx"><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></span><i>›</i></button>').join('')+'</section>'}
-let SV={d:null,p:0,w:100};
+let SV={d:null,p:0,w:100,fit:false};
 function svShow(){
   const v=$('#sv'),d=SV.d,n=d.pages.length,img=v.querySelector('img');
+  img.onload=()=>{if(SV.fit){SV.fit=false;const s=v.querySelector('.svs'),w=Math.round(s.clientHeight*img.naturalWidth/img.naturalHeight/s.clientWidth*100);SV.w=Math.min(300,Math.max(100,w));img.style.width=SV.w+'%';s.scrollTo(0,0)}};
   img.src=d.pages[SV.p];img.alt=d.t+' '+(SV.p+1)+'쪽';img.style.width=SV.w+'%';
   v.querySelector('.svs').scrollTo(0,0);
-  v.querySelector('.svn').textContent=n>1?(SV.p+1)+' / '+n+'쪽':'';
-  v.querySelector('[data-a="prev"]').disabled=SV.p===0;v.querySelector('[data-a="next"]').disabled=SV.p===n-1;
+  const sn=v.querySelector('.svn'),pv=v.querySelector('[data-a="prev"]'),nx=v.querySelector('[data-a="next"]');
+  if(sn)sn.textContent=(SV.p+1)+' / '+n+'쪽';if(pv)pv.disabled=SV.p===0;if(nx)nx.disabled=SV.p===n-1;
   if(SV.p+1<n){const pr=new Image();pr.src=d.pages[SV.p+1]}}
 function openDoc(k,p){
   const d=DOCS[k];let v=$('#sv');if(!v){v=document.createElement('div');v.id='sv';document.body.appendChild(v)}
   const multi=d.pages.length>1;
   v.innerHTML='<div class="svb"><b>'+esc(d.t)+'</b><span>'+(d.toc?'<button data-a="toc">목차</button>':'')+'<button data-z="-">작게</button><button data-z="+">크게</button><button data-z="x">닫기</button></span></div>'
     +'<div class="svs"><img alt=""></div>'
-    +(multi?'<div class="svf"><button data-a="prev">‹ 이전</button><span class="svn"></span><button data-a="next">다음 ›</button></div>':'<p class="svh">‘크게’를 누르거나 두 손가락으로 벌리면 더 커져요</p>')
+    +(multi?'<div class="svf"><button data-a="prev">‹ 이전</button><span class="svn"></span><button data-a="next">다음 ›</button></div>':'<p class="svh">옆으로 밀면 나머지가 보여요 · 휴대폰을 가로로 돌리면 한 화면에 더 크게 보여요</p>')
     +(d.toc?'<div class="svt" hidden><b>목차</b>'+d.toc.map(([t,pg])=>'<button data-go="'+(pg-1)+'">'+esc(t)+'<i>'+pg+'쪽</i></button>').join('')+'</div>':'');
-  SV={d,p:p||0,w:100};v.style.display='flex';document.body.style.overflow='hidden';svShow()}
+  SV={d,p:p||0,w:100,fit:!!d.fit};v.style.display='flex';document.body.style.overflow='hidden';svShow()}
 function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
