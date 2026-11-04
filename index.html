@@ -180,18 +180,18 @@ function nextJoint(){const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth()
 let CM=0,SF=null;
 function setSF(c){const m=(c[0]||'').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);SF=m?{y:+m[1],m:+m[2]-1,d:+m[3],dd:c[1]||'',raw:c[0]}:null}
 function sfN(){const R=DATA['요약']||[],i=R.findIndex(r=>/^다음 잔치/.test((r[0]||'').trim()));if(i<0)return 0;let n=0;for(let k=i+3;k<R.length;k++){if(!(R[k][0]||'').trim())break;n++}return n}
-function feastIn(y,m){const L=(DATA['주모임 명단']||[]).slice(3);
-  for(const r of L){const a=((r[2]||'')+'').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);if(!a)continue;const ay=+a[1],am=+a[2]-1,ad=+a[3];
-    if(am===m&&y>ay)return true;const h=new Date(ay,am,ad+100);if(h.getFullYear()===y&&h.getMonth()===m)return true}
-  return false}
-function nextFeastHtml(){
-  const t=new Date(),b=new Date(t.getFullYear(),t.getMonth()+1,1),y=b.getFullYear(),m=b.getMonth(),out=[];
+function thu3(y,m){let c=0;for(let d=1;d<=31;d++){const x=new Date(y,m,d);if(x.getMonth()!==m)break;if(x.getDay()===4&&++c===3)return x}}
+function feastList(y,m){const out=[];
   for(const r of (DATA['주모임 명단']||[]).slice(3)){const a=((r[2]||'')+'').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/),n=(r[0]||'').trim();if(!a||!n)continue;const ay=+a[1],am=+a[2]-1,ad=+a[3],lg=a[0];
     if(am===m&&y>ay)out.push({n,k:(y-ay)+'주년',d:new Date(y,m,ad),lg});
-    const h=new Date(ay,am,ad+100);if(h.getFullYear()===y&&h.getMonth()===m)out.push({n,k:'100일',d:h,lg})}
-  if(!out.length)return '';out.sort((a,b)=>a.d-b.d||(a.n<b.n?-1:1));
-  const th=[];for(let d=1;d<=new Date(y,m+1,0).getDate();d++)if(new Date(y,m,d).getDay()===4)th.push(d);
-  return '<div class="cele nx"><div class="ct">📅 '+(m+1)+'월 잔치 예정자</div><ul>'+out.map(x=>'<li><span class="em">'+(x.k==='100일'?'🎉':'🎂')+'</span><b>'+esc(x.n)+'</b><span class="kd">'+x.k+'</span><i>마지막도박일 '+esc(x.lg)+'</i></li>').join('')+'</ul><p class="cnote">'+(m+1)+'월 '+th[2]+'일(목) 잔치 · 잔치 전까지는 모두 예정이에요.</p></div>'}
+    const h=new Date(ay,am,ad+100),t3=thu3(h.getFullYear(),h.getMonth()),tm=h<=t3?new Date(h.getFullYear(),h.getMonth(),1):new Date(h.getFullYear(),h.getMonth()+1,1);
+    if(tm.getFullYear()===y&&tm.getMonth()===m)out.push({n,k:'100일',d:h,lg})}
+  return out}
+function feastIn(y,m){return feastList(y,m).length>0}
+function nextFeastHtml(){
+  const t=new Date(),b=new Date(t.getFullYear(),t.getMonth()+1,1),y=b.getFullYear(),m=b.getMonth(),out=feastList(y,m);
+  if(!out.length)return '';out.sort((a,b)=>a.d-b.d||(a.n<b.n?-1:1));const t3=thu3(y,m);
+  return '<div class="cele nx"><div class="ct">📅 '+(m+1)+'월 잔치 예정자</div><ul>'+out.map(x=>'<li><span class="em">'+(x.k==='100일'?'🎉':'🎂')+'</span><b>'+esc(x.n)+'</b><span class="kd">'+x.k+'</span><i>마지막도박일 '+esc(x.lg)+'</i></li>').join('')+'</ul><p class="cnote">'+(m+1)+'월 '+t3.getDate()+'일(목) 잔치 · 잔치 전까지는 모두 예정이에요.</p></div>'}
 function calInner(){
   const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate()),base=new Date(t0.getFullYear(),t0.getMonth()+CM,1),y=base.getFullYear(),m=base.getMonth();
   const dim=new Date(y,m+1,0).getDate(),lead=base.getDay(),ty={},ths=[];
