@@ -190,8 +190,8 @@ function feastList(y,m){const out=[];
 function feastIn(y,m){return feastList(y,m).length>0}
 function nextFeastHtml(){
   const t=new Date(),b=new Date(t.getFullYear(),t.getMonth()+1,1),y=b.getFullYear(),m=b.getMonth(),out=feastList(y,m);
-  if(!out.length)return '';out.sort((a,b)=>a.d-b.d||(a.n<b.n?-1:1));const t3=thu3(y,m);
-  return '<div class="cele nx"><div class="ct">📅 '+(m+1)+'월 잔치 예정자</div><ul>'+out.map(x=>'<li><span class="em">'+(x.k==='100일'?'🎉':'🎂')+'</span><b>'+esc(x.n)+'</b><span class="kd">'+x.k+'</span><i>마지막도박일 '+esc(x.lg)+'</i></li>').join('')+'</ul><p class="cnote">'+(m+1)+'월 '+t3.getDate()+'일(목) 잔치 · 잔치 전까지는 모두 예정이에요.</p></div>'}
+  if(!out.length)return '';out.sort((a,b)=>a.d-b.d||(a.n<b.n?-1:1));
+  return '<div class="cele nx"><div class="ct">📅 '+(m+1)+'월 잔치 예정자</div><ul>'+out.map(x=>'<li><span class="em">'+(x.k==='100일'?'🎉':'🎂')+'</span><b>'+esc(x.n)+'</b><span class="kd">'+x.k+'</span><i>마지막도박일 '+esc(x.lg)+'</i></li>').join('')+'</ul></div>'}
 function calInner(){
   const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate()),base=new Date(t0.getFullYear(),t0.getMonth()+CM,1),y=base.getFullYear(),m=base.getMonth();
   const dim=new Date(y,m+1,0).getDate(),lead=base.getDay(),ty={},ths=[];
