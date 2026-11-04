@@ -71,6 +71,7 @@ nav button.on{background:var(--navy);color:#fff;font-weight:700}
 .cele .em{font-size:20px}.cele li b{font-size:17px;color:#2B2110}.cele .kd{padding:2px 10px;border-radius:999px;background:var(--gold2);color:#1C2541;font-weight:700;font-size:12.5px}.cele li i{margin-left:auto;font-style:normal;color:#7A6A3A;font-size:14px}
 .cele .cnone{text-align:center;color:#7A6A3A;margin:6px 0 10px;font-size:14px}
 @media(prefers-color-scheme:dark){.cele{background:linear-gradient(180deg,#2A2540,#1D2238);border-color:#5B4B24}.cele .ct{color:#F0C766}.cele li{border-color:#4A4060}.cele li b{color:#F3F5FA}.cele li i,.cele .cnone{color:#C9BC93}}.hero .jt.jf{margin:0 0 14px;padding:0 0 14px;border-top:0;border-bottom:1px solid rgba(255,255,255,.22)}
+.hero .jt.jr{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin:0;padding:16px 0;border:0;border-top:1px solid rgba(255,255,255,.22);font:700 12.5px/1.3 var(--serif);letter-spacing:.04em;color:var(--chalk)}.hero .jt.jr:first-child{border-top:0;padding-top:0}.hero .jt.jr:last-child{padding-bottom:0}.hero .jt.jr h2,.hero .jt.jr b,.hero .jt.jr .big,.hero .jt.jr .dd,.hero .jt.jr i{margin:0}.hero .jt.jr h2{font:inherit;letter-spacing:inherit;color:inherit;display:block}.hero .jt.jr b,.hero .jt.jr .big{font:700 18px/1.2 var(--serif);letter-spacing:0;color:#fff}
 .msg{text-align:center;color:var(--muted);padding:34px 8px}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 14px 12px;box-shadow:var(--shadow);position:relative;overflow:hidden}
@@ -162,9 +163,9 @@ function finCards(rows,items,q){
 function nextJoint(){const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate());let y=t.getFullYear(),m=t.getMonth();
   for(let i=0;i<30;i++,m++){if((m%12+1)%2===0)continue;const e=new Date(y+Math.floor(m/12),m%12+1,0);while(e.getDay()!==4)e.setDate(e.getDate()-1);if(e>=t0)return{d:e,k:Math.round((e-t0)/864e5)}}return null}
 function jointHtml(){const j=nextJoint();if(!j)return '';const p=n=>String(n).padStart(2,'0');
-  return '<div class="jt">다음 합동모임<b>'+j.d.getFullYear()+'.'+p(j.d.getMonth()+1)+'.'+p(j.d.getDate())+' (목)</b><i>'+(j.k===0?'오늘':'D-'+j.k)+'</i></div>'}
+  return '<div class="jt jr">다음 합동모임<b>'+j.d.getFullYear()+'.'+p(j.d.getMonth()+1)+'.'+p(j.d.getDate())+' (목)</b><i>'+(j.k===0?'오늘':'D-'+j.k)+'</i></div>'}
 function meetHtml(){const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate()),d=new Date(t0);d.setDate(d.getDate()+(4-d.getDay()+7)%7);const k=Math.round((d-t0)/864e5),p=n=>String(n).padStart(2,'0');
-  return '<div class="jt jf">다음 회합<b>'+d.getFullYear()+'.'+p(d.getMonth()+1)+'.'+p(d.getDate())+' (목)</b><i>'+(k===0?'오늘':'D-'+k)+'</i></div>'}
+  return '<div class="jt jr">다음 회합<b>'+d.getFullYear()+'.'+p(d.getMonth()+1)+'.'+p(d.getDate())+' (목)</b><i>'+(k===0?'오늘':'D-'+k)+'</i></div>'}
 function phoneCards(rows,q){
   const t=(rows[0]||[''])[0].trim(),L=[];
   rows.slice(2).forEach(r=>{const c=r.map(x=>x.trim());if(!c[0]||!c[2])return;if(q&&!c.join('').replace(/\s+/g,'').includes(q))return;
@@ -188,8 +189,8 @@ function render(){
       if(title){title=false;return}
       if(cells[0]===upd){return}
       if(cells[0].length>22||/^최근 회합/.test(cells[0])){html+='<p class="sub">'+esc(cells[0])+'</p>';return}
-      close();person=false;if(/^다음 잔치/.test(cells[0])){html+='<section class="panel"><div class="hero">'+meetHtml()+'<h2>'+esc(cells[0])+'</h2>';open=true;person=true;hdrNext=false;bigNext=true;return}html+='<section class="panel"><h2>'+esc(cells[0])+'</h2><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true;bigNext=false;return}
-    if(bigNext){html+='<p class="big">'+esc(cells[0])+'</p><p class="dd">'+esc(cells[1]||'')+'</p>'+jointHtml()+'</div><div class="cele"><div class="ct">🎉 '+(parseInt((cells[0].split('.')[1]||''),10)||'')+'월 잔치자 축하합니다! 🎉</div><ul>';cele=true;celeN=0;bigNext=false;hdrNext=true;person=false;return}
+      close();person=false;if(/^다음 잔치/.test(cells[0])){html+='<section class="panel"><div class="hero">'+meetHtml()+'<div class="jt jr"><h2>'+esc(cells[0])+'</h2>';open=true;person=true;hdrNext=false;bigNext=true;return}html+='<section class="panel"><h2>'+esc(cells[0])+'</h2><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true;bigNext=false;return}
+    if(bigNext){html+='<p class="big">'+esc(cells[0])+'</p><p class="dd">'+esc(cells[1]||'')+'</p></div>'+jointHtml()+'</div><div class="cele"><div class="ct">🎉 '+(parseInt((cells[0].split('.')[1]||''),10)||'')+'월 잔치자 축하합니다! 🎉</div><ul>';cele=true;celeN=0;bigNext=false;hdrNext=true;person=false;return}
     if(!open){html+='<section class="panel"><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true}
     const isTot=cells[0]==='총계',hit=(!q||cells.join('').replace(/\s+/g,'').includes(q))&&!(CUR==='월간 보고'&&YEAR&&/^\d{4}\./.test(cells[0])&&!cells[0].startsWith(YEAR));
     if(cele){if(hdrNext){hdrNext=false;return}celeN++;html+='<li><span class="em">'+(/주년/.test(cells[1])?'🎂':'🎉')+'</span><b>'+esc(cells[0])+'</b><span class="kd">'+esc(cells[1]||'')+'</span><i>'+esc((cells[2]||'').slice(5))+'</i></li>';return}
