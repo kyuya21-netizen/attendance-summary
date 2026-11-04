@@ -240,7 +240,8 @@ function phoneCards(rows,q){
   return '<section class="panel"><h2>'+esc(t||'비상연락망')+'</h2>'+(L.join('')||'<p class="msg">내용이 없어요.</p>')+'<p class="sub" style="margin:10px 0 0">번호를 누르면 전화가 걸려요.</p></section>'}
 const TOC=[['표지',1],['목차',3],['회복 12단계 프로그램',4],['일치 12단계 프로그램',5],['G.A. 동정',6],['한국GA 제19차 정기총회 회의록',7],['GA 운영위원회 회의록',8],['2026년 상반기 GA 재정감사 보고',9],['제69차 전국가을연수 결산',10],['각 통장 거래내역',14],['라이프라인(생명선) 가입자 명단',19],['한국 GA 수입',20],['2026년 08월 수입 및 지출 내역',22],['GA 책자 및 기념품 안내',23],['2026년 11월 잔치 및 행사 안내',24]];
 const DOCS=[
-  {i:'📋',t:'회합 진행 순서',s:'GA 회합 진행 요령 · 2쪽',pages:['docs/meeting-order/p1.webp','docs/meeting-order/p2.webp']},
+  {i:'📋',t:'회합 진행 순서',s:'GA 회합 진행 요령 · 큰 글씨 8쪽',pages:Array.from({length:8},(_,k)=>'docs/meeting-large/p'+(k+1)+'.webp')},
+  {i:'📄',t:'회합 진행 순서 (원본)',s:'원본 그대로 · 2쪽',pages:['docs/meeting-order/p1.webp','docs/meeting-order/p2.webp']},
   {i:'🙋',t:'자기소개 5단계',s:'자기소개 요령 · 누르면 열려요',pages:['docs/intro-5steps-v2.webp']},
   {i:'🎵',t:'축가 악보',s:'잔치 축가 · 누르면 열려요',pages:['chuka-score.png']},
   {i:'📰',t:'한국 GA 소식지 11월호',s:'2026년 11월 · 제331호 · 28쪽',pages:Array.from({length:28},(_,k)=>'docs/news-2026-11/p'+String(k+1).padStart(2,'0')+'.webp'),toc:TOC}];
