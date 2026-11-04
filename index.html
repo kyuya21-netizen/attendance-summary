@@ -103,6 +103,29 @@ td.pc{position:relative;font-weight:700}
 #a2 button{height:34px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 14px;font:inherit;font-size:13px;cursor:pointer}#a2 button.go{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
 .ph{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid var(--line)}.ph:first-of-type{border-top:0}.ph b{font-size:16px}.ph i{font-style:normal;margin-left:8px;font-size:12px;color:var(--gold);font-weight:700}.ph a{flex:none;min-width:150px;text-align:center;box-sizing:border-box;color:var(--navy);font-weight:700;font-size:16px;text-decoration:none;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--head)}
 @media(prefers-color-scheme:dark){.ph a{color:var(--ink)}}
+
+#rd{display:none;position:fixed;inset:0;z-index:100;flex-direction:column;background:var(--bg);--rz:1}
+#rd .svb{flex:none}
+.rds{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 28px;font-size:calc(19px*var(--rz));line-height:1.85}
+.rds .in{max-width:680px;margin:0 auto}
+.rdsr{display:block;width:100%;height:50px;border:1px solid var(--line);border-radius:14px;padding:0 14px;background:var(--surface);color:var(--ink);font:inherit;font-size:17px;box-shadow:var(--shadow)}
+.rdpk{display:flex;gap:8px;align-items:center;margin:10px 0 16px}
+.rdpk select{flex:1;min-width:0;height:48px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);font:inherit;font-size:17px;padding:0 10px}
+.rdpk button{height:48px;border:1px solid var(--navy);border-radius:14px;background:var(--navy);color:#fff;font:700 16px 'Noto Sans KR',sans-serif;padding:0 16px;white-space:nowrap;cursor:pointer}
+@media(prefers-color-scheme:dark){.rdpk button{background:var(--navy2);border-color:var(--navy2)}}
+.rdd{font:700 calc(28px*var(--rz))/1.3 var(--serif);margin:6px 0 4px}
+.rdd small{display:block;font:500 calc(14px*var(--rz))/1.4 'Noto Sans KR',sans-serif;color:var(--muted)}
+.rds h2{font-size:calc(17px*var(--rz));margin:26px 0 8px}
+.rds p{margin:0 0 .75em;word-break:keep-all}
+.rdq2{margin:18px 0 0;padding:14px 16px;border-radius:16px;background:var(--head);border-left:4px solid var(--gold2);font-weight:700;word-break:keep-all}
+.rdk{margin:26px 0 0;padding:18px 18px 20px;border-radius:18px;color:var(--chalk);background:radial-gradient(90% 120% at 100% 0,rgba(232,118,43,.35),rgba(232,118,43,0) 55%),linear-gradient(150deg,var(--navy2),var(--navy))}
+.rdk small{display:block;font:700 calc(13px*var(--rz)) 'Noto Sans KR',sans-serif;letter-spacing:.08em;color:var(--gold2);margin-bottom:4px}
+.rdk b{display:block;font:700 calc(23px*var(--rz))/1.5 var(--serif);word-break:keep-all}
+.rdres{margin:12px 0 6px;color:var(--muted);font-size:calc(15px*var(--rz));line-height:1.5}
+.rdr{display:block;width:100%;text-align:left;padding:12px 4px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);font:inherit;font-size:calc(17px*var(--rz));line-height:1.6;cursor:pointer}
+.rdr b{display:block;font:700 calc(18px*var(--rz)) var(--serif)}
+.rdr mark{background:color-mix(in srgb,var(--gold2) 38%,transparent);color:inherit;border-radius:4px;padding:0 2px}
+#rd .svf button{min-width:96px}
 @media print{nav,#zm,#a2{display:none}}
 </style>
 </head>
@@ -222,7 +245,7 @@ const DOCS=[
   {i:'📰',t:'한국 GA 소식지 11월호',s:'2026년 11월 · 제331호 · 28쪽',pages:Array.from({length:28},(_,k)=>'docs/news-2026-11/p'+String(k+1).padStart(2,'0')+'.webp'),toc:TOC}];
 function libHtml(){
   return '<section class="panel lib"><div class="libb"><span>📚</span><div><b>자료실</b><small>함께 보는 자료를 모아 두었어요</small></div></div>'
-    +DOCS.map((x,k)=>'<button class="song" data-doc="'+k+'"><span class="ic">'+x.i+'</span><span class="tx"><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></span><i>›</i></button>').join('')+'</section>'}
+    +'<button class="song" data-rd="1"><span class="ic">📖</span><span class="tx"><b>오늘 하루를 위하여</b><small>매일 읽는 글 · 날짜나 낱말로 찾아요</small></span><i>›</i></button>'+DOCS.map((x,k)=>'<button class="song" data-doc="'+k+'"><span class="ic">'+x.i+'</span><span class="tx"><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></span><i>›</i></button>').join('')+'</section>'}
 let SV={d:null,p:0,w:100};
 function svShow(){
   const v=$('#sv'),d=SV.d,n=d.pages.length,img=v.querySelector('img');
@@ -296,7 +319,7 @@ $('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){
 $('#view').addEventListener('click',e=>{const td=e.target.closest('td.fn');if(!td)return;const tr=td.parentElement,nx=tr.nextElementSibling;if(nx&&nx.classList.contains('lg')){nx.remove();return}
   const nm=td.textContent.trim(),r=(DATA['주모임 명단']||[]).slice(3).find(x=>x[0].trim()===nm);
   const n=document.createElement('tr');n.className='lg';n.innerHTML='<td colspan="'+tr.children.length+'">'+esc(nm)+' · 마지막 도박일 <b>'+esc(r&&r[2].trim()?r[2].trim():'기록 없음')+'</b>'+(r&&r[1]?' · 최초참석 '+esc(r[1].trim()):'')+(r&&r[3]&&r[3].trim()?' · 마지막 참석 <b>'+esc(r[3].trim())+'</b>':'')+'</td>';tr.after(n)});
-$('#view').addEventListener('click',e=>{const b=e.target.closest('button.song');if(b)openDoc(+b.dataset.doc);const c=e.target.closest('button[data-cm]');if(c){CM=c.dataset.cm==='0'?0:CM+ +c.dataset.cm;$('#calx').innerHTML=calInner()}});
+$('#view').addEventListener('click',e=>{const b=e.target.closest('button.song');if(b){if(b.dataset.rd)openRd();else openDoc(+b.dataset.doc)}const c=e.target.closest('button[data-cm]');if(c){CM=c.dataset.cm==='0'?0:CM+ +c.dataset.cm;$('#calx').innerHTML=calInner()}});
 document.addEventListener('click',e=>{const v=$('#sv');if(!v||!SV.d)return;const t=e.target.closest('#sv button');if(!t)return;
   const n=SV.d.pages.length;
   if(t.dataset.z){const k=t.dataset.z;if(k==='x'){v.style.display='none';document.body.style.overflow='';return}
@@ -308,6 +331,75 @@ document.addEventListener('click',e=>{const v=$('#sv');if(!v||!SV.d)return;const
 (function(){let x0=null,y0=0;document.addEventListener('touchstart',e=>{const s=e.target.closest('#sv .svs');if(s&&SV.w===100&&e.touches.length===1){x0=e.touches[0].clientX;y0=e.touches[0].clientY}else x0=null},{passive:true});
   document.addEventListener('touchend',e=>{if(x0===null||!SV.d)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;
     if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.6){if(dx<0&&SV.p<SV.d.pages.length-1){SV.p++;svShow()}else if(dx>0&&SV.p>0){SV.p--;svShow()}}},{passive:true})})();
+
+/* ---- 오늘 하루를 위하여 (매일 읽는 글) ---- */
+const RD={data:null,i:0,q:'',z:1,fx:[]};
+try{RD.z=Math.max(1,Math.min(1.6,+localStorage.getItem('rdz')||1))}catch(e){}
+const RDDIM=[31,29,31,30,31,30,31,31,30,31,30,31];
+function rdToday(){const t=new Date(),m=t.getMonth()+1,d=t.getDate();const k=RD.data.findIndex(x=>x.m===m&&x.d===d);return k<0?0:k}
+function rdFlat(x){return [x.r.join(' '),x.q,x.p.join(' '),x.k].join(' ')}
+function rdBox(){return $('#rd')}
+function openRd(){
+  let v=rdBox();if(!v){v=document.createElement('div');v.id='rd';document.body.appendChild(v)}
+  v.style.display='flex';document.body.style.overflow='hidden';
+  v.innerHTML='<div class="svb"><b>오늘 하루를 위하여</b><span><button data-r="z-">작게</button><button data-r="z+">크게</button><button data-r="x">닫기</button></span></div><div class="rds"><div class="in"><p class="msg">불러오는 중…</p></div></div>';
+  v.style.setProperty('--rz',RD.z);
+  const go=()=>{RD.q='';RD.i=rdToday();rdRender(true)};
+  if(RD.data){go();return}
+  fetch('daily.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{RD.data=j;RD.fx=j.map(x=>rdFlat(x).replace(/\s+/g,''));go()}).catch(()=>{v.querySelector('.in').innerHTML='<p class="msg">글을 불러오지 못했어요.<br>인터넷 연결을 확인하고 다시 열어 주세요.</p>'});
+}
+function rdDayHtml(){
+  const x=RD.data[RD.i],mo=x.m;
+  const mopt=Array.from({length:12},(_,k)=>'<option value="'+(k+1)+'"'+(k+1===mo?' selected':'')+'>'+(k+1)+'월</option>').join('');
+  const dopt=Array.from({length:RDDIM[mo-1]},(_,k)=>'<option value="'+(k+1)+'"'+(k+1===x.d?' selected':'')+'>'+(k+1)+'일</option>').join('');
+  return '<div class="rdpk"><select id="rdm" aria-label="월">'+mopt+'</select><select id="rdday" aria-label="일">'+dopt+'</select><button data-r="today">오늘</button></div>'
+    +'<div class="rdd">'+x.m+'월 '+x.d+'일<small>오늘 하루를 위하여</small></div>'
+    +'<h2>오늘의 성찰</h2>'+x.r.map(t=>'<p>'+esc(t)+'</p>').join('')+(x.q?'<div class="rdq2">'+esc(x.q)+'</div>':'')
+    +'<h2>오늘의 기도</h2>'+x.p.map(t=>'<p>'+esc(t)+'</p>').join('')
+    +'<div class="rdk"><small>오늘 간직해야 할 것</small><b>'+esc(x.k)+'</b></div>'}
+function rdParseDate(q){const m=q.match(/(\d{1,2})\s*(?:월|\/|\.|-)\s*(\d{1,2})\s*일?/);if(!m)return -1;const mo=+m[1],d=+m[2];return RD.data.findIndex(x=>x.m===mo&&x.d===d)}
+function rdResHtml(){
+  const raw=RD.q.trim(),q=raw.replace(/\s+/g,'');
+  if(!q)return '';
+  const out=[],di=rdParseDate(raw);
+  if(di>=0)out.push({i:di,sn:'이 날짜의 글을 열어요',date:1});
+  RD.fx.forEach((f,i)=>{const k=f.indexOf(q);if(k<0||(di>=0&&i===di&&out[0].date&&0))return;
+    const x=RD.data[i],full=rdFlat(x);let map=[],c='';for(let a=0;a<full.length;a++){if(!/\s/.test(full[a])){map.push(a);c+=full[a]}}
+    const s0=map[k],e0=map[k+q.length-1]+1,a=Math.max(0,s0-22),b=Math.min(full.length,e0+30);
+    const sn=(a>0?'…':'')+esc(full.slice(a,s0))+'<mark>'+esc(full.slice(s0,e0))+'</mark>'+esc(full.slice(e0,b))+(b<full.length?'…':'');
+    out.push({i,sn})});
+  if(!out.length)return '<p class="msg">찾는 글이 없어요.<br>다른 낱말로 찾아 보세요.</p>';
+  const n=out.filter(o=>!o.date).length;
+  return '<p class="rdres">'+(n?n+'일의 글에서 찾았어요. 누르면 열려요.':'')+'</p>'+out.slice(0,120).map(o=>'<button class="rdr" data-ri="'+o.i+'"><b>'+RD.data[o.i].m+'월 '+RD.data[o.i].d+'일</b>'+(o.date?esc(o.sn):o.sn)+'</button>').join('')}
+function rdRender(top){
+  const v=rdBox();if(!v||!RD.data)return;
+  const searching=RD.q.trim()!=='';
+  const x=RD.data[RD.i];
+  v.querySelector('.rds').innerHTML='<div class="in"><input id="rdq" class="rdsr" type="search" placeholder="낱말이나 날짜로 찾기 (예: 감사, 11월 5일)" value="'+esc(RD.q)+'" autocomplete="off">'+(searching?rdResHtml():rdDayHtml())+'</div>';
+  const old=v.querySelector('.svf');if(old)old.remove();
+  if(!searching){const f=document.createElement('div');f.className='svf';f.innerHTML='<button data-r="prev">‹ 어제</button><span class="svn">'+x.m+'월 '+x.d+'일</span><button data-r="next">내일 ›</button>';v.appendChild(f)}
+  if(top)v.querySelector('.rds').scrollTo(0,0);
+}
+function rdMove(n){const L=RD.data.length;RD.i=(RD.i+n+L)%L;RD.q='';rdRender(true)}
+document.addEventListener('click',e=>{const v=rdBox();if(!v||!v.contains(e.target))return;
+  const r=e.target.closest('[data-r]'),ri=e.target.closest('[data-ri]');
+  if(ri){RD.i=+ri.dataset.ri;RD.q='';rdRender(true);return}
+  if(!r)return;const a=r.dataset.r;
+  if(a==='x'){v.style.display='none';document.body.style.overflow='';return}
+  if(a==='z+'||a==='z-'){RD.z=Math.max(1,Math.min(1.6,+(RD.z+(a==='z+'?.15:-.15)).toFixed(2)));v.style.setProperty('--rz',RD.z);try{localStorage.setItem('rdz',RD.z)}catch(_){}return}
+  if(!RD.data)return;
+  if(a==='prev')rdMove(-1);else if(a==='next')rdMove(1);else if(a==='today'){RD.i=rdToday();RD.q='';rdRender(true)}});
+document.addEventListener('change',e=>{if(!RD.data)return;const t=e.target;
+  if(t.id==='rdm'||t.id==='rdday'){let mo=+$('#rdm').value,d=+$('#rdday').value;d=Math.min(d,RDDIM[mo-1]);const k=RD.data.findIndex(x=>x.m===mo&&x.d===d);if(k>=0){RD.i=k;RD.q='';rdRender(true)}}});
+document.addEventListener('input',e=>{if(e.target.id!=='rdq'||!RD.data)return;
+  const was=RD.q.trim()!=='';RD.q=e.target.value;const now=RD.q.trim()!=='';
+  const sc=rdBox().querySelector('.rds'),inn=sc.querySelector('.in'),box=inn.querySelector('.rdsr');
+  while(box.nextSibling)box.nextSibling.remove();
+  box.insertAdjacentHTML('afterend',now?rdResHtml():rdDayHtml());
+  const old=rdBox().querySelector('.svf');if(old)old.remove();
+  if(!now){const x=RD.data[RD.i],f=document.createElement('div');f.className='svf';f.innerHTML='<button data-r="prev">‹ 어제</button><span class="svn">'+x.m+'월 '+x.d+'일</span><button data-r="next">내일 ›</button>';rdBox().appendChild(f)}});
+(function(){let x0=null,y0=0;document.addEventListener('touchstart',e=>{const s=e.target.closest('#rd .rds');if(s&&RD.data&&RD.q.trim()===''&&e.touches.length===1&&e.target.tagName!=='SELECT'&&e.target.tagName!=='INPUT'){x0=e.touches[0].clientX;y0=e.touches[0].clientY}else x0=null},{passive:true});
+  document.addEventListener('touchend',e=>{if(x0===null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>80&&Math.abs(dx)>Math.abs(dy)*1.8)rdMove(dx<0?1:-1)},{passive:true})})();
 $('#q').addEventListener('input',render);
 $('#yr').addEventListener('click',e=>{const b=e.target.closest('button');if(b){YEAR=b.dataset.y;render()}});
 $('#rf').addEventListener('click',loadAll);
