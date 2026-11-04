@@ -178,11 +178,17 @@ function nextJoint(){const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth()
   for(let i=0;i<30;i++,m++){if((m%12+1)%2===0)continue;const e=new Date(y+Math.floor(m/12),m%12+1,0);while(e.getDay()!==4)e.setDate(e.getDate()-1);if(e>=t0)return{d:e,k:Math.round((e-t0)/864e5)}}return null}
 let CM=0,SF=null;
 function setSF(c){const m=(c[0]||'').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);SF=m?{y:+m[1],m:+m[2]-1,d:+m[3],dd:c[1]||'',raw:c[0]}:null}
+function sfN(){const R=DATA['요약']||[],i=R.findIndex(r=>/^다음 잔치/.test((r[0]||'').trim()));if(i<0)return 0;let n=0;for(let k=i+3;k<R.length;k++){if(!(R[k][0]||'').trim())break;n++}return n}
+function feastIn(y,m){const L=(DATA['주모임 명단']||[]).slice(3);
+  for(const r of L){const a=((r[2]||'')+'').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);if(!a)continue;const ay=+a[1],am=+a[2]-1,ad=+a[3];
+    if(am===m&&y>ay)return true;const h=new Date(ay,am,ad+100);if(h.getFullYear()===y&&h.getMonth()===m)return true}
+  return false}
 function calInner(){
   const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate()),base=new Date(t0.getFullYear(),t0.getMonth()+CM,1),y=base.getFullYear(),m=base.getMonth();
   const dim=new Date(y,m+1,0).getDate(),lead=base.getDay(),ty={},ths=[];
   for(let d=1;d<=dim;d++)if(new Date(y,m,d).getDay()===4){ty[d]='a';ths.push(d)}
-  let fe=ths[2];if(SF&&SF.y===y&&SF.m===m)fe=SF.d;if(fe)ty[fe]='b';
+  let fe=null;if(SF&&SF.y===y&&SF.m===m){if(sfN()>0)fe=SF.d}else if(feastIn(y,m))fe=ths[2];
+  if(fe)ty[fe]='b';
   if((m+1)%2===1&&ths.length){const l=ths[ths.length-1];if(l!==fe)ty[l]='c'}
   const isNow=t0.getFullYear()===y&&t0.getMonth()===m;let g='';
   for(let i=0;i<lead;i++)g+='<div></div>';
