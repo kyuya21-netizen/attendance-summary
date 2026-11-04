@@ -147,6 +147,9 @@ function finCards(rows,items,q){
     [['p',3,4,5],['l',7,8,9]].forEach(([k,i,x,b])=>{o[k].i+=num(c[i]);o[k].x+=num(c[x]);if(o[k].e===null)o[k].e=num(c[b])})});
   (items||[]).slice(3).map(r=>r.map(x=>x.trim())).filter(r=>r[0]&&r[3]==='지출').forEach(r=>{const m=r[1].slice(0,7).replace(/\./g,'-'),o=MO[m];if(!o)return;const k=r[2]==='생명선'?'l':'p',n=r[4]||'(내용 없음)';o[k].xs[n]=(o[k].xs[n]||0)+num(r[5])});
   const ML=Object.values(MO).filter(o=>o.p.i||o.p.x||o.l.i||o.l.x).sort((a,b)=>a.m<b.m?1:-1);
+  const BB=ML.map(o=>({m:o.m,b:Object.entries(o.p.xs).filter(([n])=>n.includes('본부')).reduce((t,[,v])=>t+v,0),l:o.l.x})).filter(x=>x.b||x.l);
+  if(BB.length&&!q){const tb=BB.reduce((t,x)=>t+x.b,0),tl=BB.reduce((t,x)=>t+x.l,0);
+    html+='<div class="mc"><b>본부 송금 기록</b><p class="sub" style="margin:2px 0 4px">달마다 본부로 보낸 돈이에요.</p>'+BB.map(x=>'<p class="n"><b>'+x.m.replace("-",".")+'</b> 본부후원금 '+W(x.b)+'원 · 생명선 '+W(x.l)+'원</p>').join('')+'<p class="n" style="margin-top:8px"><b>합계</b> 본부후원금 '+W(tb)+'원 · 생명선 '+W(tl)+'원</p></div>'}
   if(ML.length&&!q)html+='<div class="mc"><b>월별 결산</b>'+ML.map(o=>'<p class="n" style="margin-top:10px"><b>'+o.m.replace("-",".")+'</b></p>'+[['후원금','p'],['생명선','l']].map(([l,k])=>{const x=o[k];return '<p class="n"><b>'+l+'</b> 입금 '+W(x.i)+' · 지출 '+W(x.x)+' · 월말 잔액 <b>'+W(x.e)+'원</b></p>'+Object.entries(x.xs).sort((a,b)=>b[1]-a[1]).map(([n,v])=>'<p class="n" style="margin-left:10px">└ '+esc(n)+' '+W(v)+'원</p>').join('')}).join('')).join('')+'</div>';
   const cards=R.filter(c=>[2,3,4,5,6,7,8,9].some(i=>num(c[i])!==0)).filter(c=>!YEAR||c[1].startsWith(YEAR)).map(c=>{
     const its=(items||[]).slice(3).map(r=>r.map(x=>x.trim())).filter(r=>r[0]&&r[0]===c[0]);
