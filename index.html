@@ -74,8 +74,10 @@ nav button.on{background:var(--navy);color:#fff;font-weight:700}
 .hero .jt.jr{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin:0;padding:16px 0;border:0;border-top:1px solid rgba(255,255,255,.22);font:700 12.5px/1.3 var(--serif);letter-spacing:.04em;color:var(--chalk)}.hero .jt.jr:first-child{border-top:0;padding-top:0}.hero .jt.jr:last-child{padding-bottom:0}.hero .jt.jr h2,.hero .jt.jr b,.hero .jt.jr .big,.hero .jt.jr .dd,.hero .jt.jr i{margin:0}.hero .jt.jr h2{font:inherit;letter-spacing:inherit;color:inherit;display:block}.hero .jt.jr b,.hero .jt.jr .big{font:700 18px/1.2 var(--serif);letter-spacing:0;color:#fff}
 .libb{display:flex;align-items:center;gap:12px;margin:-16px -14px 14px;padding:16px;border-radius:17px 17px 0 0;color:var(--chalk);background:radial-gradient(90% 120% at 100% 0,rgba(201,150,47,.35),rgba(201,150,47,0) 55%),linear-gradient(150deg,var(--navy2),var(--navy))}.libb>span{font-size:30px}.libb b{display:block;font:700 22px/1.2 var(--serif);color:#fff}.libb small{display:block;margin-top:4px;font-size:13px;opacity:.85}
 .song{display:flex;align-items:center;gap:12px;width:100%;min-height:68px;margin:0 0 10px;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);text-align:left;font:inherit;cursor:pointer;box-shadow:var(--shadow)}.song:last-child{margin-bottom:0}.song .ic{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--head);font-size:24px}.song .tx{flex:1;min-width:0}.song b{display:block;font-size:18px}.song small{display:block;margin-top:2px;font-size:13px;color:var(--muted)}.song i{flex:none;font-style:normal;font-size:26px;color:var(--muted)}
-#sv{display:none;position:fixed;inset:0;z-index:100;flex-direction:column;background:var(--bg)}.svb{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;background:var(--navy);color:#fff}.svb>b{font:700 17px var(--serif)}.svb>span{display:flex;gap:6px}.svb button{height:38px;min-width:54px;padding:0 12px;border:1px solid rgba(255,255,255,.45);border-radius:999px;background:rgba(255,255,255,.1);color:#fff;font:700 14px 'Noto Sans KR',sans-serif;cursor:pointer}
-.svs{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y pinch-zoom;background:var(--bg)}.svs img{display:block;max-width:none;height:auto}.svh{margin:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));font-size:13px;text-align:center;color:var(--muted);background:var(--surface);border-top:1px solid var(--line)}
+#sv{display:none;position:fixed;inset:0;z-index:100;flex-direction:column;background:var(--bg)}.svb{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;background:var(--navy);color:#fff}.svb>b{flex:1;min-width:0;font:700 16px/1.25 var(--serif)}.svb>span{display:flex;gap:6px}.svb button{height:38px;min-width:54px;padding:0 12px;border:1px solid rgba(255,255,255,.45);border-radius:999px;background:rgba(255,255,255,.1);color:#fff;font:700 14px 'Noto Sans KR',sans-serif;cursor:pointer}
+.svs{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y pinch-zoom;background:var(--bg)}.svs img{display:block;max-width:none;height:auto}.svf{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line)}.svf button{height:46px;min-width:104px;border:1px solid var(--line);border-radius:14px;background:var(--navy);color:#fff;font:700 16px 'Noto Sans KR',sans-serif;cursor:pointer}.svf button:disabled{opacity:.3}.svn{font:700 15px 'Noto Sans KR',sans-serif;color:var(--ink)}
+.svt{position:absolute;left:0;right:0;top:calc(58px + env(safe-area-inset-top,0px));bottom:0;overflow:auto;background:var(--surface);padding:6px 14px 24px}.svt[hidden]{display:none}.svt>b{display:block;margin:8px 0;font:700 18px var(--serif)}.svt button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:52px;padding:10px 4px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);text-align:left;font:500 16px 'Noto Sans KR',sans-serif;cursor:pointer}.svt button i{flex:none;font-style:normal;font-size:13px;color:var(--muted)}
+.svh{margin:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));font-size:13px;text-align:center;color:var(--muted);background:var(--surface);border-top:1px solid var(--line)}
 .msg{text-align:center;color:var(--muted);padding:34px 8px}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 14px 12px;box-shadow:var(--shadow);position:relative;overflow:hidden}
@@ -175,14 +177,29 @@ function phoneCards(rows,q){
   rows.slice(2).forEach(r=>{const c=r.map(x=>x.trim());if(!c[0]||!c[2])return;if(q&&!c.join('').replace(/\s+/g,'').includes(q))return;
     L.push('<div class="ph"><span><b>'+esc(c[0])+'</b>'+(c[1]?'<i>'+esc(c[1])+'</i>':'')+'</span><a href="tel:'+esc(c[2].replace(/[^\d+]/g,''))+'">'+esc(c[2])+'</a></div>')});
   return '<section class="panel"><h2>'+esc(t||'비상연락망')+'</h2>'+(L.join('')||'<p class="msg">내용이 없어요.</p>')+'<p class="sub" style="margin:10px 0 0">번호를 누르면 전화가 걸려요.</p></section>'}
-const DOCS=[{i:'🎵',t:'축가 악보',s:'잔치 축가 · 누르면 열려요',f:'chuka-score.png'}];
+const TOC=[['표지',1],['목차',3],['회복 12단계 프로그램',4],['일치 12단계 프로그램',5],['G.A. 동정',6],['한국GA 제19차 정기총회 회의록',7],['GA 운영위원회 회의록',8],['2026년 상반기 GA 재정감사 보고',9],['제69차 전국가을연수 결산',10],['각 통장 거래내역',14],['라이프라인(생명선) 가입자 명단',19],['한국 GA 수입',20],['2026년 08월 수입 및 지출 내역',22],['GA 책자 및 기념품 안내',23],['2026년 11월 잔치 및 행사 안내',24]];
+const DOCS=[
+  {i:'🎵',t:'축가 악보',s:'잔치 축가 · 누르면 열려요',pages:['chuka-score.png']},
+  {i:'📰',t:'한국 GA 소식지 11월호',s:'2026년 11월 · 제331호 · 28쪽',pages:Array.from({length:28},(_,k)=>'docs/news-2026-11/p'+String(k+1).padStart(2,'0')+'.webp'),toc:TOC}];
 function libHtml(){
   return '<section class="panel lib"><div class="libb"><span>📚</span><div><b>자료실</b><small>함께 보는 자료를 모아 두었어요</small></div></div>'
-    +DOCS.map(x=>'<button class="song" data-song="'+esc(x.f)+'" data-title="'+esc(x.t)+'"><span class="ic">'+x.i+'</span><span class="tx"><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></span><i>›</i></button>').join('')+'</section>'}
-function openSong(f,t){
-  let v=$('#sv');if(!v){v=document.createElement('div');v.id='sv';document.body.appendChild(v)}
-  v.innerHTML='<div class="svb"><b>'+esc(t)+'</b><span><button data-z="-">작게</button><button data-z="+">크게</button><button data-z="x">닫기</button></span></div><div class="svs"><img src="'+esc(f)+'" alt="'+esc(t)+' 악보" style="width:100%"></div><p class="svh">‘크게’를 누르거나 두 손가락으로 벌리면 더 커져요</p>';
-  v.dataset.w='100';v.style.display='flex';document.body.style.overflow='hidden'}
+    +DOCS.map((x,k)=>'<button class="song" data-doc="'+k+'"><span class="ic">'+x.i+'</span><span class="tx"><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></span><i>›</i></button>').join('')+'</section>'}
+let SV={d:null,p:0,w:100};
+function svShow(){
+  const v=$('#sv'),d=SV.d,n=d.pages.length,img=v.querySelector('img');
+  img.src=d.pages[SV.p];img.alt=d.t+' '+(SV.p+1)+'쪽';img.style.width=SV.w+'%';
+  v.querySelector('.svs').scrollTo(0,0);
+  v.querySelector('.svn').textContent=n>1?(SV.p+1)+' / '+n+'쪽':'';
+  v.querySelector('[data-a="prev"]').disabled=SV.p===0;v.querySelector('[data-a="next"]').disabled=SV.p===n-1;
+  if(SV.p+1<n){const pr=new Image();pr.src=d.pages[SV.p+1]}}
+function openDoc(k,p){
+  const d=DOCS[k];let v=$('#sv');if(!v){v=document.createElement('div');v.id='sv';document.body.appendChild(v)}
+  const multi=d.pages.length>1;
+  v.innerHTML='<div class="svb"><b>'+esc(d.t)+'</b><span>'+(d.toc?'<button data-a="toc">목차</button>':'')+'<button data-z="-">작게</button><button data-z="+">크게</button><button data-z="x">닫기</button></span></div>'
+    +'<div class="svs"><img alt=""></div>'
+    +(multi?'<div class="svf"><button data-a="prev">‹ 이전</button><span class="svn"></span><button data-a="next">다음 ›</button></div>':'<p class="svh">‘크게’를 누르거나 두 손가락으로 벌리면 더 커져요</p>')
+    +(d.toc?'<div class="svt" hidden><b>목차</b>'+d.toc.map(([t,pg])=>'<button data-go="'+(pg-1)+'">'+esc(t)+'<i>'+pg+'쪽</i></button>').join('')+'</div>':'');
+  SV={d,p:p||0,w:100};v.style.display='flex';document.body.style.overflow='hidden';svShow()}
 function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
@@ -237,10 +254,18 @@ $('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){
 $('#view').addEventListener('click',e=>{const td=e.target.closest('td.fn');if(!td)return;const tr=td.parentElement,nx=tr.nextElementSibling;if(nx&&nx.classList.contains('lg')){nx.remove();return}
   const nm=td.textContent.trim(),r=(DATA['주모임 명단']||[]).slice(3).find(x=>x[0].trim()===nm);
   const n=document.createElement('tr');n.className='lg';n.innerHTML='<td colspan="'+tr.children.length+'">'+esc(nm)+' · 마지막 도박일 <b>'+esc(r&&r[2].trim()?r[2].trim():'기록 없음')+'</b>'+(r&&r[1]?' · 최초참석 '+esc(r[1].trim()):'')+(r&&r[3]&&r[3].trim()?' · 마지막 참석 <b>'+esc(r[3].trim())+'</b>':'')+'</td>';tr.after(n)});
-$('#view').addEventListener('click',e=>{const b=e.target.closest('button.song');if(b)openSong(b.dataset.song,b.dataset.title)});
-document.addEventListener('click',e=>{const v=$('#sv');if(!v)return;const z=e.target.closest('#sv button[data-z]');if(!z)return;const k=z.dataset.z;
-  if(k==='x'){v.style.display='none';document.body.style.overflow='';return}
-  let w=+v.dataset.w||100;w=k==='+'?Math.min(300,w+50):Math.max(100,w-50);v.dataset.w=w;v.querySelector('img').style.width=w+'%'});
+$('#view').addEventListener('click',e=>{const b=e.target.closest('button.song');if(b)openDoc(+b.dataset.doc)});
+document.addEventListener('click',e=>{const v=$('#sv');if(!v||!SV.d)return;const t=e.target.closest('#sv button');if(!t)return;
+  const n=SV.d.pages.length;
+  if(t.dataset.z){const k=t.dataset.z;if(k==='x'){v.style.display='none';document.body.style.overflow='';return}
+    SV.w=k==='+'?Math.min(300,SV.w+50):Math.max(100,SV.w-50);v.querySelector('img').style.width=SV.w+'%';return}
+  if(t.dataset.a==='prev'&&SV.p>0){SV.p--;svShow();return}
+  if(t.dataset.a==='next'&&SV.p<n-1){SV.p++;svShow();return}
+  if(t.dataset.a==='toc'){const x=v.querySelector('.svt');x.hidden=!x.hidden;return}
+  if(t.dataset.go!==undefined){SV.p=+t.dataset.go;v.querySelector('.svt').hidden=true;svShow()}});
+(function(){let x0=null,y0=0;document.addEventListener('touchstart',e=>{const s=e.target.closest('#sv .svs');if(s&&SV.w===100&&e.touches.length===1){x0=e.touches[0].clientX;y0=e.touches[0].clientY}else x0=null},{passive:true});
+  document.addEventListener('touchend',e=>{if(x0===null||!SV.d)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;
+    if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.6){if(dx<0&&SV.p<SV.d.pages.length-1){SV.p++;svShow()}else if(dx>0&&SV.p>0){SV.p--;svShow()}}},{passive:true})})();
 $('#q').addEventListener('input',render);
 $('#yr').addEventListener('click',e=>{const b=e.target.closest('button');if(b){YEAR=b.dataset.y;render()}});
 $('#rf').addEventListener('click',loadAll);
