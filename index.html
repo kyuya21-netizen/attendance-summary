@@ -72,7 +72,7 @@ nav button.on{background:var(--navy);color:#fff;font-weight:700}
 .cele .cnone{text-align:center;color:#7A6A3A;margin:6px 0 10px;font-size:14px}
 @media(prefers-color-scheme:dark){.cele{background:linear-gradient(180deg,#2A2540,#1D2238);border-color:#5B4B24}.cele .ct{color:#F0C766}.cele li{border-color:#4A4060}.cele li b{color:#F3F5FA}.cele li i,.cele .cnone{color:#C9BC93}}.hero .jt.jf{margin:0 0 14px;padding:0 0 14px;border-top:0;border-bottom:1px solid rgba(255,255,255,.22)}
 .hero .jt.jr{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin:0;padding:16px 0;border:0;border-top:1px solid rgba(255,255,255,.22);font:700 12.5px/1.3 var(--serif);letter-spacing:.04em;color:var(--chalk)}.hero .jt.jr:first-child{border-top:0;padding-top:0}.hero .jt.jr:last-child{padding-bottom:0}.hero .jt.jr h2,.hero .jt.jr b,.hero .jt.jr .big,.hero .jt.jr .dd,.hero .jt.jr i{margin:0}.hero .jt.jr h2{font:inherit;letter-spacing:inherit;color:inherit;display:block}.hero .jt.jr b,.hero .jt.jr .big{font:700 18px/1.2 var(--serif);letter-spacing:0;color:#fff}
-.stk{display:flex;align-items:center;gap:8px;padding:10px 2px;border-top:1px dashed var(--line)}.stk .em{font-size:20px}.stk b{font-size:17px}.stk .kd{padding:2px 10px;border-radius:999px;background:var(--gold2);color:#1C2541;font-weight:700;font-size:12.5px}.stk i{margin-left:auto;font-style:normal;color:var(--muted);font-size:13px}
+.stk{display:flex;align-items:center;gap:8px;padding:10px 2px;border-top:1px dashed var(--line)}.stk .em{font-size:20px}.stk b{font-size:17px}.stk .kd{padding:2px 10px;border-radius:999px;background:var(--gold2);color:#1C2541;font-weight:700;font-size:12.5px}.stk .nm{display:flex;flex-direction:column;line-height:1.25;min-width:0}.stk .nm small{font-size:12.5px;font-weight:500;color:var(--muted)}.stk i{margin-left:auto;font-style:normal;color:var(--muted);font-size:13px}
 .msg{text-align:center;color:var(--muted);padding:34px 8px}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 14px 12px;box-shadow:var(--shadow);position:relative;overflow:hidden}
@@ -172,11 +172,11 @@ function streakHtml(){
   if(!rows.length)return '';
   const sets=rows.map(c=>new Set(c[7].split(/[,，]/).map(x=>x.trim()).filter(Boolean)));
   const names=[...new Set(sets.flatMap(s=>[...s]))];
-  const L=names.map(n=>{let cur=0;while(cur<sets.length&&sets[cur].has(n))cur++;let best=0,run=0;for(let i=sets.length-1;i>=0;i--){if(sets[i].has(n)){run++;if(run>best)best=run}else run=0}return{n,cur,best}})
+  const L=names.map(n=>{let cur=0;while(cur<sets.length&&sets[cur].has(n))cur++;let best=0,run=0;for(let i=sets.length-1;i>=0;i--){if(sets[i].has(n)){run++;if(run>best)best=run}else run=0}const m=cur?(rows[cur-1][1].match(/(\d{4})\.(\d{1,2})/)||[]):[];return{n,cur,best,from:m[1]?m[1]+'년 '+(+m[2])+'월부터':''}})
     .filter(x=>x.cur>=2).sort((a,b)=>b.cur-a.cur||b.best-a.best||a.n.localeCompare(b.n,'ko'));
   const em=k=>k>=12?'🏆':k>=8?'🏅':k>=4?'🔥':'👏';
   return '<section class="panel"><h2>🔥 연속 출석</h2><p class="sub" style="margin:0 0 6px">제'+esc(rows[0][0])+'회까지 이어진 기록이에요.</p>'
-    +(L.length?L.map(x=>'<div class="stk"><span class="em">'+em(x.cur)+'</span><b>'+esc(x.n)+'</b><span class="kd">'+x.cur+'주 연속</span><i>최장 '+x.best+'주</i></div>').join(''):'<p class="cnone" style="text-align:center;color:var(--muted)">아직 연속 출석 중인 분이 없어요.</p>')
+    +(L.length?L.map(x=>'<div class="stk"><span class="em">'+em(x.cur)+'</span><span class="nm"><b>'+esc(x.n)+'</b>'+(x.from?'<small>'+esc(x.from)+'</small>':'')+'</span><span class="kd">'+x.cur+'주 연속</span><i>최장 '+x.best+'주</i></div>').join(''):'<p class="cnone" style="text-align:center;color:var(--muted)">아직 연속 출석 중인 분이 없어요.</p>')
     +'<p class="sub" style="margin:10px 0 0">👏 2주 · 🔥 4주 · 🏅 8주 · 🏆 12주 이상</p></section>'}
 function phoneCards(rows,q){
   const t=(rows[0]||[''])[0].trim(),L=[];
