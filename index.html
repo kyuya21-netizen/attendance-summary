@@ -123,7 +123,7 @@ function meetCards(rows,q){
     if(YEAR&&!c[1].startsWith(YEAR))return;const txt=c.join(' ');if(q&&!txt.replace(/\s+/g,'').includes(q))return;
     const f=(c[6]&&c[6]!=='0')?'<span class="tag">잔치 '+esc(c[6])+'</span>':'',nw=(c[5]&&c[5]!=='0')?'<span class="tag nw">신규 '+esc(c[5])+'</span>':'';
     out.push('<div class="mc"><span class="c">주 '+esc(c[2])+' · 타 '+esc(c[3])+' · 총 '+esc(c[4])+'</span><b>'+esc(c[0])+'회</b> <span class="sub" style="margin:0">'+esc(c[1])+'</span>'+nw+f
-      +(c[7]?'<p class="n"><i>주모임</i>'+esc(c[7])+'</p>':'')+(c[8]?'<p class="n"><i>타모임</i>'+esc(c[8])+'</p>':'')+(c[9]?'<p class="n"><i>잔치</i>'+esc(c[9])+'</p>':'')+'</div>');});
+      +(c[7]?'<p class="n"><i>주모임</i>'+esc(c[7])+'</p>':'')+(c[8]?'<p class="n"><i>타모임</i>'+esc(c[8])+'</p>':'')+(c[9]?'<p class="n"><i>잔치</i>'+esc(c[9])+'</p>':'')+(c[10]?'<p class="n"><i>신규</i>'+esc(c[10])+'</p>':'')+'</div>');});
   return out.join('')||'<p class="msg">검색 결과가 없어요.</p>';
 }
 const num=x=>+String(x==null?'':x).replace(/[^\d.-]/g,'')||0,W=n=>(n<0?'-':'')+Math.abs(n).toLocaleString('ko-KR');
