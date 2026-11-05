@@ -62,7 +62,7 @@ nav button.on{background:var(--navy);color:#fff;font-weight:700}
 .bar button{white-space:nowrap;height:44px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:0 14px;font:inherit;box-shadow:var(--shadow);cursor:pointer}
 .yr[hidden]{display:none}.yr{display:flex;gap:8px;margin:0 0 12px;overflow-x:auto;scrollbar-width:none}.yr::-webkit-scrollbar{display:none}.yr button{white-space:nowrap;height:36px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);padding:0 16px;font:inherit;font-size:14px;cursor:pointer}.yr button.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
 @media(prefers-color-scheme:dark){.yr button.on{background:var(--navy2);border-color:var(--navy2)}}
-.fn{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}tr.lg td{text-align:left!important;white-space:normal;background:var(--head)!important;font-size:13px}
+.fn{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}tr.lg td{text-align:left!important;white-space:normal;background:var(--head)!important;font-size:13px}tr.lg td.fx{font-size:15px;line-height:1.6}
 .hero h2::before{display:none}.hero h2{font-size:12.5px;display:inline-block;vertical-align:middle;margin:0 10px 0 0}
 .hero .big,.hero .jt b{display:inline-block;vertical-align:middle;margin:0}.hero .dd,.hero .jt i{display:inline-block;vertical-align:middle;margin:0 0 0 8px}
 .hero .jt{margin:8px 0 0;padding-top:8px}.hero .jt.jf{margin:0 0 8px;padding:0 0 8px}.hero .jt b{margin:0 0 0 10px}
@@ -271,7 +271,7 @@ function quoteHtml(){const t=new Date(),k=((Math.floor((Date.UTC(t.getFullYear()
 function recentHtml(){
   const R=(DATA['회합별']||[]).slice(2).map(r=>r.map(x=>x.trim())).filter(c=>c[0]).slice(0,8);
   if(!R.length)return '';
-  return '<section class="panel"><h2>최근 회합</h2><div style="overflow-x:auto"><table><tbody><tr><th>회차</th><th>날짜</th><th>주</th><th>타</th><th>총</th><th>신규</th><th>잔치</th></tr>'+R.map(c=>'<tr><td>'+esc(c[0])+'</td><td>'+esc(c[1].replace(/^\d{4}\./,'').replace(/\s*\(.\)/,''))+'</td><td>'+esc(c[2])+'</td><td>'+esc(c[3])+'</td><td><b>'+esc(c[4])+'</b></td><td>'+((c[5]&&c[5]!=='0')?esc(c[5]):'-')+'</td><td>'+((c[6]&&c[6]!=='0')?'<span class="tag" style="margin:0">🎉 '+esc(c[6])+'명</span>':'-')+'</td></tr>').join('')+'</tbody></table></div></section>';
+  return '<section class="panel"><h2>최근 회합</h2><div style="overflow-x:auto"><table><tbody><tr><th>회차</th><th>날짜</th><th>주</th><th>타</th><th>총</th><th>신규</th><th>잔치</th></tr>'+R.map(c=>'<tr><td>'+esc(c[0])+'</td><td>'+esc(c[1].replace(/^\d{4}\./,'').replace(/\s*\(.\)/,''))+'</td><td>'+esc(c[2])+'</td><td>'+esc(c[3])+'</td><td><b>'+esc(c[4])+'</b></td><td>'+((c[5]&&c[5]!=='0')?esc(c[5]):'-')+'</td><td>'+((c[6]&&c[6]!=='0')?'<button class="tag fxb" style="margin:0;background:transparent;cursor:pointer;font-family:inherit" data-fn="'+esc(c[9]||'이름 기록 없음')+'">🎉 '+esc(c[6])+'명 ▾</button>':'-')+'</td></tr>').join('')+'</tbody></table></div></section>';
 }
 function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
@@ -326,6 +326,8 @@ async function loadAll(){
 const NL={'주모임 명단':'명단','월간 보고':'월간','비상연락망':'연락망'};
 $('#nav').innerHTML=TABS.map(t=>'<button data-t="'+t+'">'+(NL[t]||t)+'</button>').join('');
 $('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){CUR=b.dataset.t;render();scrollTo(0,0)}});
+$('#view').addEventListener('click',e=>{const b=e.target.closest('button.fxb');if(!b)return;const tr=b.closest('tr'),nx=tr.nextElementSibling;if(nx&&nx.classList.contains('lg')){nx.remove();return}
+  const n=document.createElement('tr');n.className='lg';n.innerHTML='<td class="fx" colspan="'+tr.children.length+'">🎉 '+esc(tr.children[1].textContent)+' 잔치 · <b>'+esc(b.dataset.fn)+'</b></td>';tr.after(n)});
 $('#view').addEventListener('click',e=>{const td=e.target.closest('td.fn');if(!td)return;const tr=td.parentElement,nx=tr.nextElementSibling;if(nx&&nx.classList.contains('lg')){nx.remove();return}
   const nm=td.textContent.trim(),r=(DATA['주모임 명단']||[]).slice(3).find(x=>x[0].trim()===nm);
   const n=document.createElement('tr');n.className='lg';n.innerHTML='<td colspan="'+tr.children.length+'">'+esc(nm)+' · 마지막 도박일 <b>'+esc(r&&r[2].trim()?r[2].trim():'기록 없음')+'</b>'+(r&&r[1]?' · 최초참석 '+esc(r[1].trim()):'')+(r&&r[3]&&r[3].trim()?' · 마지막 참석 <b>'+esc(r[3].trim())+'</b>':'')+'</td>';tr.after(n)});
