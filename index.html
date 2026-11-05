@@ -175,6 +175,7 @@ const SHORT={'마지막도박일':'단도박 시작일','마지막 도박일':'�
 let YEAR=String(new Date().getFullYear());
 let YV='2026';
 const NB=t=>String(t).split(/\s*,\s*/).filter(Boolean).map(n=>'<button type="button" class="nmb" data-n="'+esc(n)+'">'+esc(n)+'</button>').join(', ');
+function mainRos(){const R=(DATA['주모임 명단']||[]).slice(3),i=R.findIndex(r=>/^타모임 명단/.test((r[0]||'').trim()));return i<0?R:R.slice(0,i)}
 function nameInfo(nm){const r=(DATA['주모임 명단']||[]).slice(3).map(x=>x.map(y=>(y||'').trim())).find(x=>x[0]===nm&&/^\d{4}\./.test(x[1]||''));
   if(!r)return '<b>'+esc(nm)+'</b> · 명단에 기록이 없어요';
   return '<b>'+esc(nm)+'</b> · 최초참석 '+esc(r[1])+' · 단도박 시작일 '+(r[2]?esc(r[2]):'기록 없음')+' · 마지막 참석 '+esc(r[3]||'-')}
@@ -217,7 +218,7 @@ function setSF(c){const m=(c[0]||'').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);SF=m
 function sfN(){const R=DATA['요약']||[],i=R.findIndex(r=>/^다음 잔치/.test((r[0]||'').trim()));if(i<0)return 0;let n=0;for(let k=i+3;k<R.length;k++){if(!(R[k][0]||'').trim())break;n++}return n}
 function thu3(y,m){let c=0;for(let d=1;d<=31;d++){const x=new Date(y,m,d);if(x.getMonth()!==m)break;if(x.getDay()===4&&++c===3)return x}}
 function feastList(y,m){const out=[];
-  for(const r of (DATA['주모임 명단']||[]).slice(3)){const a=((r[2]||'')+'').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/),n=(r[0]||'').trim();if(!a||!n)continue;const ay=+a[1],am=+a[2]-1,ad=+a[3],lg=a[0];
+  for(const r of mainRos()){const a=((r[2]||'')+'').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/),n=(r[0]||'').trim();if(!a||!n)continue;const ay=+a[1],am=+a[2]-1,ad=+a[3],lg=a[0];
     if(am===m&&y>ay)out.push({n,k:(y-ay)+'주년',d:new Date(y,m,ad),lg});
     const h=new Date(ay,am,ad+100),t3=thu3(h.getFullYear(),h.getMonth()),tm=h<=t3?new Date(h.getFullYear(),h.getMonth(),1):new Date(h.getFullYear(),h.getMonth()+1,1);
     if(tm.getFullYear()===y&&tm.getMonth()===m)out.push({n,k:'100일',d:h,lg})}
@@ -317,7 +318,7 @@ function render(){
     if(bigNext){setSF(cells);html+='<div class="calx" id="calx">'+calInner()+'</div><div class="cele"><div class="ct">🎉 '+(parseInt((cells[0].split('.')[1]||''),10)||'')+'월 잔치자 축하합니다! 🎉</div><ul>';cele=true;celeN=0;bigNext=false;hdrNext=true;person=false;return}
     if(!open){html+='<section class="panel"><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true}
     const isTot=cells[0]==='총계',hit=(!q||cells.join('').replace(/\s+/g,'').includes(q))&&!(CUR==='월간 보고'&&YR&&/^\d{4}\./.test(cells[0])&&!cells[0].startsWith(YR));
-    if(cele){if(hdrNext){hdrNext=false;return}celeN++;const mr=(DATA['주모임 명단']||[]).slice(3).find(x=>(x[0]||'').trim()===cells[0]),lg=mr&&(mr[2]||'').trim();html+='<li><span class="em">'+(/주년/.test(cells[1])?'🎂':'🎉')+'</span><b>'+esc(cells[0])+'</b><span class="kd">'+esc(cells[1]||'')+'</span><i>'+(lg?'단도박 시작일 '+esc(lg):esc((cells[2]||'').slice(5)))+'</i></li>';return}
+    if(cele){if(hdrNext){hdrNext=false;return}celeN++;const mr=mainRos().find(x=>(x[0]||'').trim()===cells[0]),lg=mr&&(mr[2]||'').trim();html+='<li><span class="em">'+(/주년/.test(cells[1])?'🎂':'🎉')+'</span><b>'+esc(cells[0])+'</b><span class="kd">'+esc(cells[1]||'')+'</span><i>'+(lg?'단도박 시작일 '+esc(lg):esc((cells[2]||'').slice(5)))+'</i></li>';return}
     if(hdrNext&&(cells[0]==='이름'||cells[0]==='익명')&&cells.length>=9){pHead=cells;person=true;html=html.replace(/<div style="overflow-x:auto"><table><tbody>$/,'<div>');hdrNext=false;return}
     if(person){if(!hit)return;const y=k=>(pHead[k]||'').split(' ')[0],v=(a,b)=>cells[a]?cells[a]+'회 '+(cells[b]||'-'):'-';
       html+='<div class="pr"><span class="c">누적 '+esc(cells[10]||'-')+'</span><b>'+esc(cells[0])+'</b> <span class="sub" style="margin:0">'+esc(cells[1])+'</span><p class="n">'+[2,4,6].map(k=>esc(y(k))+' '+(cells[k]?esc(cells[k])+'회 '+esc(cells[k+1]||'-'):'-')).join(' · ')+' · 누적 '+esc(cells[8]||'-')+'/'+esc(cells[9]||'-')+'</p></div>';return}
