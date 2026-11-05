@@ -55,7 +55,7 @@ tr.tot td{font-weight:700;background:var(--head)!important;border-top:2px solid 
 .pr{padding:11px 0;border-top:1px solid var(--line)}.pr:first-child{border-top:0}.pr b{font-size:15px}.pr .c{float:right;font-weight:700;color:var(--gold)}.pr .n{margin:3px 0 0;font-size:13px;color:var(--muted)}
 .tag{display:inline-block;font-size:11.5px;font-weight:700;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:0 9px;margin-left:6px;vertical-align:middle}
 .tag.nw{border-color:var(--ok);color:var(--ok)}
-.yrs{color:var(--gold);font-weight:700;margin-right:4px}
+.yrs{color:var(--gold);font-weight:700;margin-right:4px}#view.ros .yrs{display:block;margin:0 0 1px;font-size:12px;line-height:1.15}
 #view.ros td.ag2{background:#FFD9A0;color:#5A2E00;font-weight:800}#view.ros td.ag3{background:#C62828;color:#fff;font-weight:800}#view.ros table{font-size:13px}#view.ros th,#view.ros td{padding-left:4px;padding-right:4px}
 nav{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:6px;background:color-mix(in srgb,var(--surface) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 30px -10px rgba(28,37,65,.35);max-width:700px;margin:0 auto}
 nav button{height:42px;border:0;border-radius:16px;background:none;color:var(--muted);font:500 13px 'Noto Sans KR',sans-serif;white-space:nowrap;padding:0 2px;cursor:pointer}
@@ -276,7 +276,7 @@ const QUOTES=["오늘 아침 눈을 뜬 것부터가 좋은 시작이에요.", "
 function quoteHtml(){const t=new Date(),k=((Math.floor((Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())-Date.UTC(2026,10,5))/864e5)%QUOTES.length)+QUOTES.length)%QUOTES.length;return '<div class="qt"><small>오늘의 한마디</small><p>'+esc(QUOTES[k])+'</p><button class="qtb" data-rd="1"><span>📖 오늘의 성찰 · '+(t.getMonth()+1)+'월 '+t.getDate()+'일</span><i>읽기 ›</i></button></div>'}
 function agCls(c){const m=/^(\d{4})\.(\d{2})\.(\d{2})$/.exec((c||'').trim());if(!m)return '';const t=new Date();const d=Math.floor((Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())-Date.UTC(+m[1],+m[2]-1,+m[3]))/864e5);return d>=90?' class="ag3"':d>=30?' class="ag2"':''}
 const sd=s=>/^\d{4}\.\d{2}\.\d{2}$/.test(s||'')?s.slice(2):(s||'');
-function lgTag(s){const m=/^(\d{4})\.(\d{2})\.(\d{2})$/.exec(s||'');if(!m)return '';const b=new Date(+m[1],+m[2]-1,+m[3]),t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate());if(b>t0)return '';let y=0;while(new Date(b.getFullYear()+y+1,b.getMonth(),b.getDate())<=t0)y++;return '<b class="yrs">'+(y>=1?y+'주년':(Math.round((t0-b)/864e5)+1)+'일')+'</b>'}
+function lgTag(s){const m=/^(\d{4})\.(\d{2})\.(\d{2})$/.exec(s||'');if(!m)return '';const b=new Date(+m[1],+m[2]-1,+m[3]),t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate());if(b>t0)return '';let mo=(t0.getFullYear()-b.getFullYear())*12+t0.getMonth()-b.getMonth();if(t0.getDate()<b.getDate())mo--;const dd=Math.round((t0-b)/864e5)+1,y=Math.floor(mo/12),r=mo%12;return '<b class="yrs">'+(dd<=100?dd+'일':y>=1?y+'년'+(r?' '+r+'개월':''):mo+'개월')+'</b>'}
 function recentHtml(){
   const R=(DATA['회합별']||[]).slice(2).map(r=>r.map(x=>x.trim())).filter(c=>c[0]).slice(0,8);
   if(!R.length)return '';
