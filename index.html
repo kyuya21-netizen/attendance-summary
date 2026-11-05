@@ -279,8 +279,10 @@ function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
   const yb=$('#yr'),yrOn=CUR==='회합별'||CUR==='월간 보고'||CUR==='회계';yb.hidden=!yrOn;
+  let avail=null;
+  if(CUR==='회계'){avail=[...new Set((DATA['회계']||[]).slice(3).map(r=>r.map(x=>x.trim())).filter(c=>c[0]&&/^\d{4}/.test(c[1]||'')&&[2,3,4,5,6,7,8,9].some(i=>num(c[i])!==0)).map(c=>c[1].slice(0,4)))].sort().reverse();if(avail.length&&!avail.includes(YEAR))YEAR=avail[0];if(avail.length<2)yb.hidden=true}
   const YR=YEAR;
-  if(yrOn){const cy=new Date().getFullYear(),ys=[];for(let y=cy;y>=Math.min(2024,cy);y--)ys.push(String(y));yb.innerHTML=ys.map(y=>'<button data-y="'+y+'"'+(y===YR?' class="on"':'')+'>'+(y?y+'년':'전체')+'</button>').join('')}
+  if(yrOn){const cy=new Date().getFullYear(),ys=[];for(let y=cy;y>=Math.min(2024,cy);y--)ys.push(String(y));if(avail&&avail.length)ys.splice(0,ys.length,...avail);yb.innerHTML=ys.map(y=>'<button data-y="'+y+'"'+(y===YR?' class="on"':'')+'>'+(y?y+'년':'전체')+'</button>').join('')}
   if(CUR==='자료실'){$('#view').innerHTML=libHtml();return}
   if(CUR==='회계'){$('#view').innerHTML=finCards(rows,DATA['회계 내역'],q);return}
   if(CUR==='회합별'){$('#view').innerHTML=meetCards(rows,q);return}
