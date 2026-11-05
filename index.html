@@ -172,6 +172,7 @@ async function loadJson(name){
 async function load(name){try{return await loadCsv(name)}catch(e){return await loadJson(name)}}
 const SHORT={'마지막도박일':'단도박 시작일','마지막 도박일':'단도박 시작일','회합 횟수':'횟수','주모임 참석':'주','타모임 참석':'타','총 참석':'총','주모임 출석':'주'};
 let YEAR=String(new Date().getFullYear());
+let YV='2026';
 function meetCards(rows,q){
   const out=[];
   rows.slice(2).forEach(r=>{const c=r.map(x=>x.trim());if(!c[0])return;
@@ -285,20 +286,22 @@ function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
   $('#view').classList.toggle('ros',CUR==='주모임 명단');
-  const yb=$('#yr'),yrOn=CUR==='회합별'||CUR==='월간 보고'||CUR==='회계';yb.hidden=!yrOn;
+  const yb=$('#yr'),yrOn=CUR==='회합별'||CUR==='월간 보고'||CUR==='회계'||CUR==='연도별';yb.hidden=!yrOn;
   let avail=null;
   if(CUR==='회계'){avail=[...new Set((DATA['회계']||[]).slice(3).map(r=>r.map(x=>x.trim())).filter(c=>c[0]&&/^\d{4}/.test(c[1]||'')&&[2,3,4,5,6,7,8,9].some(i=>num(c[i])!==0)).map(c=>c[1].slice(0,4)))].sort().reverse();if(avail.length&&!avail.includes(YEAR))YEAR=avail[0];if(avail.length<2)yb.hidden=true}
   const YR=YEAR;
-  if(yrOn){const cy=new Date().getFullYear(),ys=[];for(let y=cy;y>=Math.min(2024,cy);y--)ys.push(String(y));if(avail&&avail.length)ys.splice(0,ys.length,...avail);yb.innerHTML=ys.map(y=>'<button data-y="'+y+'"'+(y===YR?' class="on"':'')+'>'+(y?y+'년':'전체')+'</button>').join('')}
+  if(CUR==='연도별'){yb.innerHTML=['2024','2025','2026','개인별'].map(y=>'<button data-y="'+y+'"'+(y===YV?' class="on"':'')+'>'+(y==='개인별'?'개인별회합':y+'년')+'</button>').join('')}
+  else if(yrOn){const cy=new Date().getFullYear(),ys=[];for(let y=cy;y>=Math.min(2024,cy);y--)ys.push(String(y));if(avail&&avail.length)ys.splice(0,ys.length,...avail);yb.innerHTML=ys.map(y=>'<button data-y="'+y+'"'+(y===YR?' class="on"':'')+'>'+(y?y+'년':'전체')+'</button>').join('')}
   if(CUR==='자료실'){$('#view').innerHTML=libHtml();return}
   if(CUR==='회계'){$('#view').innerHTML=finCards(rows,DATA['회계 내역'],q);return}
   if(CUR==='회합별'){$('#view').innerHTML=meetCards(rows,q);return}
   if(CUR==='비상연락망'){$('#view').innerHTML=phoneCards(rows,q);return}
   const upd=$('#upd').textContent;
-  let html='',open=false,hdrNext=false,title=true,bigNext=false,person=false,cele=false,celeN=0,pHead=[],skipM=false;
+  let html='',open=false,hdrNext=false,title=true,bigNext=false,person=false,cele=false,celeN=0,pHead=[],skipM=false,skipV=false;
   const close=()=>{if(open){if(cele){html+=(celeN?'</ul>':'<p class="cnone">이번 달 잔치자는 없어요.</p>')+'</div>'+nextFeastHtml()+'</section>';cele=false;celeN=0}else html+=person?'</div></section>':'</tbody></table></div></section>';open=false}};
   rows.forEach(r=>{
     const cells=r.map(x=>x.trim()),ne=cells.filter(Boolean);
+    if(CUR==='연도별'){if(!ne.length)skipV=false;else if(ne.length===1&&(/^\d{4}년 월별/.test(cells[0])||/^개인별/.test(cells[0])))skipV=!(YV==='개인별'?/^개인별/.test(cells[0]):cells[0].startsWith(YV+'년'));if(skipV&&ne.length)return}
     if(CUR==='요약'){if(!ne.length)skipM=false;else if(skipM)return;else if(ne.length===1&&/^\d{4}년 월별/.test(cells[0])){close();person=false;hdrNext=false;bigNext=false;html+=(q?'':recentHtml());skipM=true;return}}
     if(!ne.length){close();person=false;hdrNext=false;bigNext=false;return}
     if(ne.length===1&&cells[0]){
@@ -426,7 +429,7 @@ document.addEventListener('input',e=>{if(e.target.id!=='rdq'||!RD.data)return;
 (function(){let x0=null,y0=0;document.addEventListener('touchstart',e=>{const s=e.target.closest('#rd .rds');if(s&&RD.data&&RD.q.trim()===''&&e.touches.length===1&&e.target.tagName!=='SELECT'&&e.target.tagName!=='INPUT'){x0=e.touches[0].clientX;y0=e.touches[0].clientY}else x0=null},{passive:true});
   document.addEventListener('touchend',e=>{if(x0===null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>80&&Math.abs(dx)>Math.abs(dy)*1.8)rdMove(dx<0?1:-1)},{passive:true})})();
 $('#q').addEventListener('input',render);
-$('#yr').addEventListener('click',e=>{const b=e.target.closest('button');if(b){YEAR=b.dataset.y;render()}});
+$('#yr').addEventListener('click',e=>{const b=e.target.closest('button');if(b){if(CUR==='연도별')YV=b.dataset.y;else YEAR=b.dataset.y;render()}});
 $('#rf').addEventListener('click',loadAll);
 loadAll();
 
