@@ -170,7 +170,7 @@ async function loadJson(name){
   return j.table.rows.map(row=>{const c=row.c||[];return Array.from({length:n},(_,i)=>{const x=c[i];if(!x||x.v==null)return'';return x.f!=null?String(x.f):String(x.v)})});
 }
 async function load(name){try{return await loadCsv(name)}catch(e){return await loadJson(name)}}
-const SHORT={'회합 횟수':'횟수','주모임 참석':'주','타모임 참석':'타','총 참석':'총','주모임 출석':'주'};
+const SHORT={'마지막도박일':'단도박 시작일','마지막 도박일':'단도박 시작일','회합 횟수':'횟수','주모임 참석':'주','타모임 참석':'타','총 참석':'총','주모임 출석':'주'};
 let YEAR=String(new Date().getFullYear());
 function meetCards(rows,q){
   const out=[];
