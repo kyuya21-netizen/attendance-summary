@@ -255,7 +255,7 @@ function libHtml(){
   const rd='<button class="song" data-rd="1"><span class="ic">📖</span><span class="tx"><b>오늘 하루를 위하여</b><small>날짜나 낱말로 찾아요</small></span><i>›</i></button>';
   const L=DOCS.map((x,k)=>'<button class="song" data-doc="'+k+'"><span class="ic">'+x.i+'</span><span class="tx"><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></span><i>›</i></button>');
   L.splice(3,0,rd);
-  return '<section class="panel lib"><div class="libb"><span>📚</span><div><b>자료실</b><small>함께 보는 자료를 모아 두었어요</small></div></div>'+'<a class="song" href="http://www.dandobak.or.kr/mobile/" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><span class="ic">🌐</span><span class="tx"><b>단도박모임 홈페이지</b><small>바로가기</small></span><i>›</i></a>'+L.join('')+'</section>'}
+  return '<section class="panel lib"><div class="libb"><span>📚</span><div><b>자료실</b><small>함께 보는 자료를 모아 두었어요</small></div></div>'+'<a class="song" href="http://www.dandobak.or.kr/mobile/" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><span class="ic">🌐</span><span class="tx"><b>한국단도박모임 홈페이지</b><small>바로가기</small></span><i>›</i></a>'+L.join('')+'</section>'}
 let SV={d:null,p:0,w:100};
 function svShow(){
   const v=$('#sv'),d=SV.d,n=d.pages.length,img=v.querySelector('img');
