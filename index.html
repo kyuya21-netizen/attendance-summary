@@ -277,7 +277,8 @@ function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
   const yb=$('#yr'),yrOn=CUR==='회합별'||CUR==='월간 보고'||CUR==='회계';yb.hidden=!yrOn;
-  if(yrOn){yb.innerHTML=['','2026','2025','2024'].map(y=>'<button data-y="'+y+'"'+(y===YEAR?' class="on"':'')+'>'+(y?y+'년':'전체')+'</button>').join('')}
+  const MON=CUR==='월간 보고',YR=(MON&&!YEAR)?String(new Date().getFullYear()):YEAR;
+  if(yrOn){const cy=new Date().getFullYear(),ys=MON?[]:[''];for(let y=cy;y>=Math.min(2024,cy);y--)ys.push(String(y));yb.innerHTML=ys.map(y=>'<button data-y="'+y+'"'+(y===YR?' class="on"':'')+'>'+(y?y+'년':'전체')+'</button>').join('')}
   if(CUR==='자료실'){$('#view').innerHTML=libHtml();return}
   if(CUR==='회계'){$('#view').innerHTML=finCards(rows,DATA['회계 내역'],q);return}
   if(CUR==='회합별'){$('#view').innerHTML=meetCards(rows,q);return}
@@ -296,7 +297,7 @@ function render(){
       close();person=false;if(/^다음 잔치/.test(cells[0])){html+='<section class="panel">';open=true;person=true;hdrNext=false;bigNext=true;return}html+='<section class="panel"><h2>'+esc(cells[0])+'</h2><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true;bigNext=false;return}
     if(bigNext){setSF(cells);html+='<div class="calx" id="calx">'+calInner()+'</div><div class="cele"><div class="ct">🎉 '+(parseInt((cells[0].split('.')[1]||''),10)||'')+'월 잔치자 축하합니다! 🎉</div><ul>';cele=true;celeN=0;bigNext=false;hdrNext=true;person=false;return}
     if(!open){html+='<section class="panel"><div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true}
-    const isTot=cells[0]==='총계',hit=(!q||cells.join('').replace(/\s+/g,'').includes(q))&&!(CUR==='월간 보고'&&YEAR&&/^\d{4}\./.test(cells[0])&&!cells[0].startsWith(YEAR));
+    const isTot=cells[0]==='총계',hit=(!q||cells.join('').replace(/\s+/g,'').includes(q))&&!(CUR==='월간 보고'&&YR&&/^\d{4}\./.test(cells[0])&&!cells[0].startsWith(YR));
     if(cele){if(hdrNext){hdrNext=false;return}celeN++;const mr=(DATA['주모임 명단']||[]).slice(3).find(x=>(x[0]||'').trim()===cells[0]),lg=mr&&(mr[2]||'').trim();html+='<li><span class="em">'+(/주년/.test(cells[1])?'🎂':'🎉')+'</span><b>'+esc(cells[0])+'</b><span class="kd">'+esc(cells[1]||'')+'</span><i>'+(lg?'마지막도박일 '+esc(lg):esc((cells[2]||'').slice(5)))+'</i></li>';return}
     if(hdrNext&&(cells[0]==='이름'||cells[0]==='익명')&&cells.length>=9){pHead=cells;person=true;html=html.replace(/<div style="overflow-x:auto"><table><tbody>$/,'<div>');hdrNext=false;return}
     if(person){if(!hit)return;const y=k=>(pHead[k]||'').split(' ')[0],v=(a,b)=>cells[a]?cells[a]+'회 '+(cells[b]||'-'):'-';
