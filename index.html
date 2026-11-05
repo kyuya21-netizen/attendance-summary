@@ -253,7 +253,7 @@ function phoneCards(rows,q){
   const t=(rows[0]||[''])[0].trim(),L=[];
   rows.slice(2).forEach(r=>{const c=r.map(x=>x.trim());if(!c[0]||!c[2])return;if(q&&!c.join('').replace(/\s+/g,'').includes(q))return;
     L.push('<div class="ph"><span><b>'+esc(c[0])+'</b>'+(c[1]?'<i>'+esc(c[1])+'</i>':'')+'</span><a href="tel:'+esc(c[2].replace(/[^\d+]/g,''))+'">'+esc(c[2])+'</a></div>')});
-  return '<section class="panel"><h2>'+esc(t||'비상연락망')+'</h2>'+(L.join('')||'<p class="msg">내용이 없어요.</p>')+'<p class="sub" style="margin:10px 0 0">번호를 누르면 전화가 걸려요.</p></section>'}
+  return '<section class="panel"><h2>'+esc(t||'비상연락망')+'</h2><p class="sub" style="margin:-4px 0 8px;font-weight:700;color:var(--gold)">📞 번호를 누르면 바로 전화가 걸려요</p>'+(L.join('')||'<p class="msg">내용이 없어요.</p>')+'</section>'}
 const TOC=[['표지',1],['목차',3],['회복 12단계 프로그램',4],['일치 12단계 프로그램',5],['G.A. 동정',6],['한국GA 제19차 정기총회 회의록',7],['GA 운영위원회 회의록',8],['2026년 상반기 GA 재정감사 보고',9],['제69차 전국가을연수 결산',10],['각 통장 거래내역',14],['라이프라인(생명선) 가입자 명단',19],['한국 GA 수입',20],['2026년 08월 수입 및 지출 내역',22],['GA 책자 및 기념품 안내',23],['2026년 11월 잔치 및 행사 안내',24]];
 const DOCS=[
   {i:'📰',t:'한국 GA 소식지 11월호',s:'2026년 11월 · 28쪽',pages:Array.from({length:28},(_,k)=>'docs/news-2026-11/p'+String(k+1).padStart(2,'0')+'.webp'),toc:TOC},
