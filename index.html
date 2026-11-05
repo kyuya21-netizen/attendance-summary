@@ -167,7 +167,7 @@ async function loadJson(name){
 }
 async function load(name){try{return await loadCsv(name)}catch(e){return await loadJson(name)}}
 const SHORT={'회합 횟수':'횟수','주모임 참석':'주','타모임 참석':'타','총 참석':'총','주모임 출석':'주'};
-let YEAR='';
+let YEAR=String(new Date().getFullYear());
 function meetCards(rows,q){
   const out=[];
   rows.slice(2).forEach(r=>{const c=r.map(x=>x.trim());if(!c[0])return;
@@ -198,7 +198,7 @@ function finCards(rows,items,q){
     if(q&&!txt.replace(/\s+/g,'').includes(q))return '';
     const blk=(l,o,ii,ie,ib)=>{const its2=its.filter(r=>r[2]===l);return '<p class="n" style="margin-top:10px"><b>'+l+'</b> 잔액 <b>'+W(num(c[ib]))+'원</b></p><p class="n">전주이월 '+W(num(c[o]))+' + 입금 '+W(num(c[ii]))+' − 지출 '+W(num(c[ie]))+'</p>'+its2.map(item).join('')};
     return '<div class="mc"><b>'+esc(c[0])+'회</b> <span class="sub" style="margin:0">'+esc(c[1])+'</span>'+blk('후원금',2,3,4,5)+blk('생명선',6,7,8,9)+'</div>'}).join('');
-  return html+(cards||'<p class="msg">'+(q||YEAR?'검색 결과가 없어요.':'아직 입력된 회계 기록이 없어요.')+'</p>');
+  return html+(cards||'<p class="msg">'+(q?'검색 결과가 없어요.':'이 해에 입력된 회계 기록이 없어요.')+'</p>');
 }
 function nextJoint(){const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate());let y=t.getFullYear(),m=t.getMonth();
   for(let i=0;i<30;i++,m++){if((m%12+1)%2===0)continue;const e=new Date(y+Math.floor(m/12),m%12+1,0);while(e.getDay()!==4)e.setDate(e.getDate()-1);if(e>=t0)return{d:e,k:Math.round((e-t0)/864e5)}}return null}
@@ -277,8 +277,8 @@ function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
   const yb=$('#yr'),yrOn=CUR==='회합별'||CUR==='월간 보고'||CUR==='회계';yb.hidden=!yrOn;
-  const MON=CUR==='월간 보고',YR=(MON&&!YEAR)?String(new Date().getFullYear()):YEAR;
-  if(yrOn){const cy=new Date().getFullYear(),ys=MON?[]:[''];for(let y=cy;y>=Math.min(2024,cy);y--)ys.push(String(y));yb.innerHTML=ys.map(y=>'<button data-y="'+y+'"'+(y===YR?' class="on"':'')+'>'+(y?y+'년':'전체')+'</button>').join('')}
+  const YR=YEAR;
+  if(yrOn){const cy=new Date().getFullYear(),ys=[];for(let y=cy;y>=Math.min(2024,cy);y--)ys.push(String(y));yb.innerHTML=ys.map(y=>'<button data-y="'+y+'"'+(y===YR?' class="on"':'')+'>'+(y?y+'년':'전체')+'</button>').join('')}
   if(CUR==='자료실'){$('#view').innerHTML=libHtml();return}
   if(CUR==='회계'){$('#view').innerHTML=finCards(rows,DATA['회계 내역'],q);return}
   if(CUR==='회합별'){$('#view').innerHTML=meetCards(rows,q);return}
