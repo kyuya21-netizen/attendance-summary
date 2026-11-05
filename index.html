@@ -187,7 +187,7 @@ function finCards(rows,items,q){
   const R=rows.slice(3).map(r=>r.map(x=>x.trim())).filter(c=>c[0]);
   const top=R[0];
   const item=(c)=>'<p class="n"><i>'+esc(c[3])+'</i>'+esc(LF(c[4]||'(내용 없음)'))+' <b>'+W(num(c[5]))+'원</b></p>';
-  let html=top?'<div class="tiles">'+[['후원금',5],['생명선',9]].map(([l,i])=>'<div class="tile"><span>'+l+' 잔액</span><strong>'+W(num(top[i]))+'원</strong><small>'+esc(top[0])+'회 기준</small></div>').join('')+'</div><p class="sub" style="margin:-4px 0 12px;padding:9px 12px;border-radius:12px;background:var(--head);border-left:4px solid var(--gold2);font-weight:700;color:var(--ink)">📌 생명선 인원은 현금으로 낸 분만 집계돼요. 자동이체·개별이체는 파악이 안 돼요.</p>':'';
+  let html=top?'<div class="tiles">'+[['후원금',5],['생명선',9]].map(([l,i])=>'<div class="tile"><span>'+l+' 잔액</span><strong>'+W(num(top[i]))+'원</strong><small>'+esc(top[0])+'회 기준</small></div>').join('')+'</div><p class="sub" style="margin:-4px 0 12px;padding:9px 12px;border-radius:12px;background:var(--head);border-left:4px solid var(--gold2);font-weight:700;color:var(--ink)">📌 생명선 인원은 현금으로 낸 분만 집계돼요.<br>자동이체·개별이체는 파악이 안 돼요.</p>':'';
   const MO={};
   R.forEach(c=>{const m=c[1].slice(0,7).replace(/\./g,'-');if(YEAR&&!c[1].startsWith(YEAR))return;const o=MO[m]||(MO[m]={m,p:{i:0,x:0,e:null,xs:{}},l:{i:0,x:0,e:null,xs:{}}});
     [['p',3,4,5],['l',7,8,9]].forEach(([k,i,x,b])=>{o[k].i+=num(c[i]);o[k].x+=num(c[x]);if(o[k].e===null)o[k].e=num(c[b])})});
