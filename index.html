@@ -175,7 +175,8 @@ const SHORT={'마지막도박일':'단도박 시작일','마지막 도박일':'�
 let YEAR=String(new Date().getFullYear());
 let YV='2026';
 const NB=t=>String(t).split(/\s*,\s*/).filter(Boolean).map(n=>'<button type="button" class="nmb" data-n="'+esc(n)+'">'+esc(n)+'</button>').join(', ');
-function mainRos(){const R=(DATA['주모임 명단']||[]).slice(3),i=R.findIndex(r=>/^타모임 명단/.test((r[0]||'').trim()));return i<0?R:R.slice(0,i)}
+function mainRos(){const R=(DATA['주모임 명단']||[]).slice(3),i=R.findIndex(r=>/^(타모임 명단|잔치 취소)/.test((r[0]||'').trim()));return i<0?R:R.slice(0,i)}
+function cxSet(){const R=(DATA['주모임 명단']||[]).slice(3),i=R.findIndex(r=>/^잔치 취소/.test((r[0]||'').trim()));if(i<0)return new Set();const o=new Set();for(const r of R.slice(i+2)){const c=r.map(x=>(x||'').trim());if(!c[0])break;o.add(c[0]+'|'+c[1]+'|'+c[2])}return o}
 function nameInfo(nm){const r=(DATA['주모임 명단']||[]).slice(3).map(x=>x.map(y=>(y||'').trim())).find(x=>x[0]===nm&&/^\d{4}\./.test(x[1]||''));
   if(!r)return '<b>'+esc(nm)+'</b> · 명단에 기록이 없어요';
   return '<b>'+esc(nm)+'</b> · 최초참석 '+esc(r[1])+' · 단도박 시작일 '+(r[2]?esc(r[2]):'기록 없음')+' · 마지막 참석 '+esc(r[3]||'-')}
@@ -222,7 +223,7 @@ function feastList(y,m){const out=[];
     if(am===m&&y>ay)out.push({n,k:(y-ay)+'주년',d:new Date(y,m,ad),lg});
     const h=new Date(ay,am,ad+100),t3=thu3(h.getFullYear(),h.getMonth()),tm=h<=t3?new Date(h.getFullYear(),h.getMonth(),1):new Date(h.getFullYear(),h.getMonth()+1,1);
     if(tm.getFullYear()===y&&tm.getMonth()===m)out.push({n,k:'100일',d:h,lg})}
-  return out}
+  const cx=cxSet(),ym=y+'.'+String(m+1).padStart(2,'0');return out.filter(x=>!cx.has(x.n+'|'+x.k+'|'+ym))}
 function feastIn(y,m){return feastList(y,m).length>0}
 function nextFeastHtml(){
   const t=new Date(),b=new Date(t.getFullYear(),t.getMonth()+1,1),y=b.getFullYear(),m=b.getMonth(),out=feastList(y,m);
