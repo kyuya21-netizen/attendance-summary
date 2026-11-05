@@ -271,7 +271,7 @@ function quoteHtml(){const t=new Date(),k=((Math.floor((Date.UTC(t.getFullYear()
 function recentHtml(){
   const R=(DATA['회합별']||[]).slice(2).map(r=>r.map(x=>x.trim())).filter(c=>c[0]).slice(0,8);
   if(!R.length)return '';
-  return '<section class="panel"><h2>최근 회합</h2><div style="overflow-x:auto"><table><tbody><tr><th>회차</th><th>날짜</th><th>주</th><th>타</th><th>총</th><th>신규</th></tr>'+R.map(c=>'<tr><td>'+esc(c[0])+'</td><td>'+esc(c[1])+'</td><td>'+esc(c[2])+'</td><td>'+esc(c[3])+'</td><td><b>'+esc(c[4])+'</b></td><td>'+((c[5]&&c[5]!=='0')?esc(c[5]):'-')+'</td></tr>').join('')+'</tbody></table></div></section>';
+  return '<section class="panel"><h2>최근 회합</h2><div style="overflow-x:auto"><table><tbody><tr><th>회차</th><th>날짜</th><th>주</th><th>타</th><th>총</th><th>신규</th><th>잔치</th></tr>'+R.map(c=>'<tr><td>'+esc(c[0])+'</td><td>'+esc(c[1].replace(/^\d{4}\./,'').replace(/\s*\(.\)/,''))+'</td><td>'+esc(c[2])+'</td><td>'+esc(c[3])+'</td><td><b>'+esc(c[4])+'</b></td><td>'+((c[5]&&c[5]!=='0')?esc(c[5]):'-')+'</td><td>'+((c[6]&&c[6]!=='0')?'<span class="tag" style="margin:0">🎉 '+esc(c[6])+'명</span>':'-')+'</td></tr>').join('')+'</tbody></table></div></section>';
 }
 function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
