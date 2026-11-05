@@ -172,13 +172,20 @@ async function loadJson(name){
 async function load(name){try{return await loadCsv(name)}catch(e){return await loadJson(name)}}
 const SHORT={'마지막도박일':'단도박 시작일','마지막 도박일':'단도박 시작일','회합 횟수':'횟수','주모임 참석':'주','타모임 참석':'타','총 참석':'총','주모임 출석':'주'};
 let YEAR=String(new Date().getFullYear());
+function acctHtml(no){
+  const c=(DATA['회계']||[]).slice(3).map(r=>r.map(x=>x.trim())).find(r=>r[0]===no);
+  if(!c||![2,3,4,5,6,7,8,9].some(i=>num(c[i])!==0))return '';
+  const its=(DATA['회계 내역']||[]).slice(3).map(r=>r.map(x=>x.trim())).filter(r=>r[0]&&r[0]===no);
+  const item=x=>'<p class="n"><i>'+esc(x[3])+'</i>'+esc(LF(x[4]||'(내용 없음)'))+' <b>'+W(num(x[5]))+'원</b></p>';
+  const blk=(l,o,ii,ie,ib)=>'<p class="n" style="margin-top:10px"><b>'+l+'</b> 잔액 <b>'+W(num(c[ib]))+'원</b></p><p class="n">전주이월 '+W(num(c[o]))+' + 입금 '+W(num(c[ii]))+' − 지출 '+W(num(c[ie]))+'</p>'+its.filter(r=>r[2]===l).map(item).join('');
+  return '<div style="margin-top:12px;padding-top:2px;border-top:1px dashed var(--line)">'+blk('후원금',2,3,4,5)+blk('생명선',6,7,8,9)+'</div>'}
 function meetCards(rows,q){
   const out=[];
   rows.slice(2).forEach(r=>{const c=r.map(x=>x.trim());if(!c[0])return;
     if(YEAR&&!c[1].startsWith(YEAR))return;const txt=c.join(' ');if(q&&!txt.replace(/\s+/g,'').includes(q))return;
     const f=(c[6]&&c[6]!=='0')?'<span class="tag">잔치 '+esc(c[6])+'</span>':'',nw=(c[5]&&c[5]!=='0')?'<span class="tag nw">신규 '+esc(c[5])+'</span>':'';
     out.push('<div class="mc"><span class="c">주 '+esc(c[2])+' · 타 '+esc(c[3])+' · 총 '+esc(c[4])+'</span><b>'+esc(c[0])+'회</b> <span class="sub" style="margin:0">'+esc(c[1])+'</span>'+nw+f
-      +(c[7]?'<p class="n"><i>주모임</i>'+esc(c[7])+'</p>':'')+(c[8]?'<p class="n"><i>타모임</i>'+esc(c[8])+'</p>':'')+(c[9]?'<p class="n"><i>잔치</i>'+esc(c[9])+'</p>':'')+(c[10]?'<p class="n"><i>신규</i>'+esc(c[10])+'</p>':'')+'</div>');});
+      +(c[7]?'<p class="n"><i>주모임</i>'+esc(c[7])+'</p>':'')+(c[8]?'<p class="n"><i>타모임</i>'+esc(c[8])+'</p>':'')+(c[9]?'<p class="n"><i>잔치</i>'+esc(c[9])+'</p>':'')+(c[10]?'<p class="n"><i>신규</i>'+esc(c[10])+'</p>':'')+acctHtml(c[0])+'</div>');});
   return out.join('')||'<p class="msg">검색 결과가 없어요.</p>';
 }
 const num=x=>+String(x==null?'':x).replace(/[^\d.-]/g,'')||0,W=n=>(n<0?'-':'')+Math.abs(n).toLocaleString('ko-KR');
