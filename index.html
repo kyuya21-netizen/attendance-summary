@@ -291,7 +291,7 @@ function lgTag(s){const m=/^(\d{4})\.(\d{2})\.(\d{2})$/.exec(s||'');if(!m)return
 function recentHtml(){
   const R=(DATA['회합별']||[]).slice(2).map(r=>r.map(x=>x.trim())).filter(c=>c[0]).slice(0,5);
   if(!R.length)return '';
-  return '<section class="panel"><h2>최근 회합</h2><div style="overflow-x:auto"><table><tbody><tr><th>회차</th><th>날짜</th><th>주</th><th>타</th><th>총</th><th>신규</th><th>잔치</th></tr>'+R.map(c=>'<tr><td>'+esc(c[0])+'</td><td>'+esc(c[1].replace(/^\d{4}\./,'').replace(/\s*\(.\)/,''))+'</td><td>'+esc(c[2])+'</td><td>'+esc(c[3])+'</td><td><b>'+esc(c[4])+'</b></td><td>'+((c[5]&&c[5]!=='0')?esc(c[5]):'-')+'</td><td>'+((c[6]&&c[6]!=='0')?'<button class="tag fxb" style="margin:0;background:transparent;cursor:pointer;font-family:inherit" data-fn="'+esc(c[9]||'이름 기록 없음')+'">🎉 '+esc(c[6])+'명 ▾</button>':'-')+'</td></tr>').join('')+'</tbody></table></div></section>';
+  return '<section class="panel"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">최근 회합</h2><button type="button" data-gotab="회합별" style="height:32px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer">더보기 ›</button></div><div style="overflow-x:auto"><table><tbody><tr><th>회차</th><th>날짜</th><th>주</th><th>타</th><th>총</th><th>신규</th><th>잔치</th></tr>'+R.map(c=>'<tr><td>'+esc(c[0])+'</td><td>'+esc(c[1].replace(/^\d{4}\./,'').replace(/\s*\(.\)/,''))+'</td><td>'+esc(c[2])+'</td><td>'+esc(c[3])+'</td><td><b>'+esc(c[4])+'</b></td><td>'+((c[5]&&c[5]!=='0')?esc(c[5]):'-')+'</td><td>'+((c[6]&&c[6]!=='0')?'<button class="tag fxb" style="margin:0;background:transparent;cursor:pointer;font-family:inherit" data-fn="'+esc(c[9]||'이름 기록 없음')+'">🎉 '+esc(c[6])+'명 ▾</button>':'-')+'</td></tr>').join('')+'</tbody></table></div></section>';
 }
 function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
@@ -353,6 +353,7 @@ async function loadAll(){
 const NL={'주모임 명단':'명단','월간 보고':'월간','비상연락망':'연락망'};
 $('#nav').innerHTML=TABS.map(t=>'<button data-t="'+t+'">'+(NL[t]||t)+'</button>').join('');
 $('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){CUR=b.dataset.t;render();scrollTo(0,0)}});
+$('#view').addEventListener('click',e=>{const g=e.target.closest('[data-gotab]');if(g){CUR=g.dataset.gotab;render();scrollTo(0,0)}});
 $('#view').addEventListener('click',e=>{const b=e.target.closest('button.fxb');if(!b)return;const tr=b.closest('tr'),nx=tr.nextElementSibling;if(nx&&nx.classList.contains('lg')){nx.remove();return}
   const n=document.createElement('tr');n.className='lg';n.innerHTML='<td class="fx" colspan="'+tr.children.length+'">🎉 '+esc(tr.children[1].textContent)+' 잔치 · <b>'+esc(b.dataset.fn)+'</b></td>';tr.after(n)});
 $('#view').addEventListener('click',e=>{const td=e.target.closest('td.fn');if(!td)return;const tr=td.parentElement,nx=tr.nextElementSibling;if(nx&&nx.classList.contains('lg')){nx.remove();return}
