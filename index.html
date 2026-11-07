@@ -289,7 +289,7 @@ function agCls(c){const m=/^(\d{4})\.(\d{2})\.(\d{2})$/.exec((c||'').trim());if(
 const sd=s=>/^\d{4}\.\d{2}\.\d{2}$/.test(s||'')?s.slice(2):(s||'');
 function lgTag(s){const m=/^(\d{4})\.(\d{2})\.(\d{2})$/.exec(s||'');if(!m)return '';const b=new Date(+m[1],+m[2]-1,+m[3]),t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate());if(b>t0)return '';let mo=(t0.getFullYear()-b.getFullYear())*12+t0.getMonth()-b.getMonth();if(t0.getDate()<b.getDate())mo--;const dd=Math.round((t0-b)/864e5)+1,y=Math.floor(mo/12),r=mo%12;return '<b class="yrs">'+(dd<=100?dd+'일':y>=1?y+'년'+(r?' '+r+'개월':''):mo+'개월')+'</b>'}
 function recentHtml(){
-  const R=(DATA['회합별']||[]).slice(2).map(r=>r.map(x=>x.trim())).filter(c=>c[0]).slice(0,8);
+  const R=(DATA['회합별']||[]).slice(2).map(r=>r.map(x=>x.trim())).filter(c=>c[0]).slice(0,5);
   if(!R.length)return '';
   return '<section class="panel"><h2>최근 회합</h2><div style="overflow-x:auto"><table><tbody><tr><th>회차</th><th>날짜</th><th>주</th><th>타</th><th>총</th><th>신규</th><th>잔치</th></tr>'+R.map(c=>'<tr><td>'+esc(c[0])+'</td><td>'+esc(c[1].replace(/^\d{4}\./,'').replace(/\s*\(.\)/,''))+'</td><td>'+esc(c[2])+'</td><td>'+esc(c[3])+'</td><td><b>'+esc(c[4])+'</b></td><td>'+((c[5]&&c[5]!=='0')?esc(c[5]):'-')+'</td><td>'+((c[6]&&c[6]!=='0')?'<button class="tag fxb" style="margin:0;background:transparent;cursor:pointer;font-family:inherit" data-fn="'+esc(c[9]||'이름 기록 없음')+'">🎉 '+esc(c[6])+'명 ▾</button>':'-')+'</td></tr>').join('')+'</tbody></table></div></section>';
 }
