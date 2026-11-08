@@ -134,12 +134,36 @@ td.pc{position:relative;font-weight:700}
 .rdr mark{background:color-mix(in srgb,var(--gold2) 38%,transparent);color:inherit;border-radius:4px;padding:0 2px}
 #rd .svf button{min-width:96px}
 @media print{nav,#zm,#a2{display:none}}
+#nt{display:none;position:fixed;inset:0;z-index:200;background:rgba(30,16,8,.62);align-items:center;justify-content:center;padding:14px}
+#nt.on{display:flex}
+#nt .nbox{background:var(--surface);border-radius:16px;width:100%;max-width:440px;max-height:100%;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 18px 50px -10px rgba(0,0,0,.55)}
+#nt .nimg{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;background:#fff}
+#nt .nimg img{display:block;width:100%;height:auto}
+#nt .nbtn{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:var(--surface)}
+#nt .nbtn button{flex:1;font:inherit;font-size:19px;font-weight:700;padding:14px 8px;border-radius:12px;border:1px solid var(--line);background:var(--head);color:var(--ink);cursor:pointer}
+#nt .nbtn button.nx{background:var(--navy);border-color:var(--navy);color:#fff}
 </style>
 </head>
 <body>
 <header><svg class="lvs" aria-hidden="true" viewBox="0 0 140 72"><defs><path id="mpl" d="M50 4 L57 20 L66 14 L64 34 L82 28 L76 44 L94 52 L72 62 L78 74 L55 68 L53 96 L47 96 L45 68 L22 74 L28 62 L6 52 L24 44 L18 28 L36 34 L34 14 L43 20 Z"/></defs><use href="#mpl" fill="#F2B134" transform="translate(58 46) rotate(-28) scale(.4) translate(-50 -50)"/><use href="#mpl" fill="#E8762B" transform="translate(100 34) rotate(20) scale(.62) translate(-50 -50)"/><use href="#mpl" fill="#C8431F" transform="translate(126 60) rotate(-12) scale(.3) translate(-50 -50)"/></svg><div id="zm"><button id="zo" aria-label="글씨 작게">가-</button><button id="zi" aria-label="글씨 크게">가+</button></div><h1>수원매산 GA<br>출석시스템</h1><p><span id="upd">불러오는 중…</span></p></header>
 <main><div id="a2"></div><div class="bar"><input id="q" type="search" placeholder="검색 (익명, 날짜, 회차)" autocomplete="off"><button id="rf">새로고침</button></div><div class="yr" id="yr" hidden></div><div id="view"><p class="msg">불러오는 중…</p></div></main>
 <nav id="nav"></nav>
+<div id="nt" role="dialog" aria-modal="true" aria-label="공지"><div class="nbox"><div class="nimg"><img src="docs/notice-159.webp" alt="제159차 합동전국봉사자모임 안내: 2026년 11월 15일(일) 오후 2시, 중앙센터 및 화상(ZOOM), 중구 퇴계로 173 남산스퀘어빌딩 8층, 종일주차 8천원. 안건은 신년회 준비 건, 장거리행사(잔치 등) 참여자 지원건. 각 모임의 봉사자분들께서는 꼭 참석바랍니다."></div><div class="nbtn"><button type="button" id="nt1">오늘 하루 안 보기</button><button type="button" id="nt2" class="nx">닫기</button></div></div></div>
+<script>
+// 공지 팝업: 2026-11-15(일)까지만 표시. 닫기=이번에만 닫음, 오늘 하루 안 보기=오늘은 다시 안 뜸.
+(function(){
+  var n=document.getElementById('nt');if(!n)return;
+  var d=new Date(),y=d.getFullYear(),m=d.getMonth()+1,day=d.getDate();
+  var today=y*10000+m*100+day;
+  if(today>20261115)return;
+  try{if(localStorage.getItem('nt159')==String(today))return;}catch(e){}
+  n.classList.add('on');
+  function close(){n.classList.remove('on');}
+  document.getElementById('nt2').onclick=close;
+  document.getElementById('nt1').onclick=function(){try{localStorage.setItem('nt159',String(today));}catch(e){}close();};
+  n.addEventListener('click',function(e){if(e.target===n)close();});
+})();
+</script>
 <script>
 const SHEET_ID='1_IlzlQDYUgUECpNJhSMEJLBqXalOOwguums1W0lP3rs';
 const TABS=['요약','주모임 명단','월간 보고','회계','연도별','회합별','비상연락망','자료실'];
