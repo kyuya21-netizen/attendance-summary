@@ -167,11 +167,11 @@ td.pc{position:relative;font-weight:700}
 </script>
 <script>
 const SHEET_ID='1_IlzlQDYUgUECpNJhSMEJLBqXalOOwguums1W0lP3rs';
-const TABS=['요약','주모임 명단','월간 보고','회계','연도별','회합별','비상연락망','자료실'];
+const TABS=['요약','주모임 명단','회계','연도별','회합별','비상연락망','자료실'];
 const DATA={};let CUR=TABS[0];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const GID={'요약':7001,'연도별':7002,'회합별':7003,'주모임 명단':7004,'월간 보고':7005,'회계':7006,'회계 내역':7007,'비상연락망':7008};
+const GID={'요약':7001,'연도별':7002,'회합별':7003,'주모임 명단':7004,'회계':7006,'회계 내역':7007,'비상연락망':7008};
 function parseCSV(t){const rows=[];let r=[],f='',q=false;
   for(let i=0;i<t.length;i++){const c=t[i];
     if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
@@ -322,7 +322,7 @@ function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
   $('#view').classList.toggle('ros',CUR==='주모임 명단');
-  const yb=$('#yr'),yrOn=CUR==='회합별'||CUR==='월간 보고'||CUR==='회계'||CUR==='연도별';yb.hidden=!yrOn;
+  const yb=$('#yr'),yrOn=CUR==='회합별'||CUR==='회계'||CUR==='연도별';yb.hidden=!yrOn;
   let avail=null;
   if(CUR==='회계'){avail=[...new Set((DATA['회계']||[]).slice(3).map(r=>r.map(x=>x.trim())).filter(c=>c[0]&&/^\d{4}/.test(c[1]||'')&&[2,3,4,5,6,7,8,9].some(i=>num(c[i])!==0)).map(c=>c[1].slice(0,4)))].sort().reverse();if(avail.length&&!avail.includes(YEAR))YEAR=avail[0];if(avail.length<2)yb.hidden=true}
   const YR=YEAR;
@@ -375,7 +375,7 @@ async function loadAll(){
     $('#upd').textContent='';
   }
 }
-const NL={'주모임 명단':'명단','월간 보고':'월간','비상연락망':'연락망'};
+const NL={'주모임 명단':'명단','비상연락망':'연락망'};
 $('#nav').innerHTML=TABS.map(t=>'<button data-t="'+t+'">'+(NL[t]||t)+'</button>').join('');
 $('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){CUR=b.dataset.t;render();scrollTo(0,0)}});
 $('#view').addEventListener('click',e=>{const g=e.target.closest('[data-gotab]');if(g){CUR=g.dataset.gotab;if(g.dataset.goyv)YV=g.dataset.goyv;render();scrollTo(0,0)}});
