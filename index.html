@@ -95,6 +95,7 @@ nav button.on{background:var(--navy);color:#fff;font-weight:700}
 .calr{border-top:1px solid var(--line);padding:2px 16px 4px}.calr>div{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}.calr>div:first-child{border-top:0}.calr .dot{width:12px;height:12px;border-radius:50%;flex:none}.calr b{display:block;font-size:17px}.calr small{display:block;color:var(--muted);font-size:13px}.calr em{margin-left:auto;font-style:normal;font-weight:700;font-size:13px;padding:2px 12px;border-radius:999px;background:var(--gold2);color:#3A2418;white-space:nowrap}
 .cele.nx{background:var(--head);border:1px dashed #F2C9A5;margin-top:10px}.cele.nx .ct{font-size:15px}.cele .cnote{margin:4px 0 6px;text-align:center;font-size:13px;color:var(--muted)}
 .msg{text-align:center;color:var(--muted);padding:34px 8px}
+.retry{margin-top:14px;padding:12px 26px;font-size:18px;font-weight:700;border:0;border-radius:12px;background:var(--navy);color:#fff}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 14px 12px;box-shadow:var(--shadow);position:relative;overflow:hidden}
 .tile::after{content:"";position:absolute;right:-18px;top:-18px;width:64px;height:64px;border-radius:50%;background:radial-gradient(var(--gold2),transparent 70%);opacity:.22}
@@ -181,14 +182,15 @@ function parseCSV(t){const rows=[];let r=[],f='',q=false;
     else if(c!=='\r')f+=c}
   if(f!==''||r.length){r.push(f);rows.push(r)}
   const n=Math.max(...rows.map(x=>x.length));return rows.map(x=>Array.from({length:n},(_,i)=>x[i]||''))}
+function tmo(ms){if(typeof AbortController==='undefined')return undefined;const c=new AbortController();setTimeout(()=>c.abort(),ms);return c.signal}
 async function loadCsv(name){
-  const r=await fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/export?format=csv&gid='+GID[name]+'&_='+Date.now(),{cache:'no-store'});
+  const r=await fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/export?format=csv&gid='+GID[name]+'&_='+Date.now(),{cache:'no-store',signal:tmo(20000)});
   if(!r.ok)throw new Error('HTTP '+r.status);
   const t=await r.text();if(/^\s*<!doctype html|^\s*<html/i.test(t))throw new Error('not csv');
   return parseCSV(t)}
 async function loadJson(name){
   const url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&headers=0&sheet='+encodeURIComponent(name)+'&_='+Date.now();
-  const r=await fetch(url,{cache:'no-store'});
+  const r=await fetch(url,{cache:'no-store',signal:tmo(20000)});
   if(!r.ok)throw new Error('HTTP '+r.status);
   const t=await r.text();
   const j=JSON.parse(t.slice(t.indexOf('(')+1,t.lastIndexOf(')')));
@@ -366,17 +368,22 @@ function render(){
   document.querySelectorAll('#view table').forEach(t=>{const hh=[...t.querySelectorAll('th')].map(x=>x.textContent);if(hh[0]==='순위'){const pi=hh.indexOf('출석률');t.querySelectorAll('tr').forEach(tr=>{const td=tr.children;if(!td.length||td[0].tagName==='TH')return;const n=+td[0].textContent;if(n>=1&&n<=3)td[0].innerHTML='<span class="rk r'+n+'">'+n+'</span>';const c=td[pi];if(c){const v=parseInt(c.textContent);if(v>=0){c.classList.add('pc');c.style.background='linear-gradient(90deg,color-mix(in srgb,var(--gold2) 30%,transparent) '+v+'%,transparent '+v+'%)'}}})}});
   document.querySelectorAll('#view table').forEach(t=>{const h=[...t.querySelectorAll('th')].map(x=>x.textContent);if((h[0]==='이름'||h[0]==='익명')&&h[2]==='날짜')t.querySelectorAll('tr').forEach(tr=>{const d=tr.querySelector('td');if(d)d.classList.add('fn')})});
 }
+let LTK=0;
 async function loadAll(){
+  const tk=++LTK;
   $('#view').innerHTML='<p class="msg">불러오는 중…</p>';
+  const slow=setTimeout(()=>{if(tk===LTK)$('#view').innerHTML='<p class="msg">불러오는 중…<br><b>연결이 평소보다 느려요.</b><br>조금만 기다려 주세요.<br><button type="button" class="retry" onclick="loadAll()">다시 시도</button></p>'},7000);
   try{
     for(const t of [...TABS.filter(x=>x!=='자료실'),'회계 내역'])DATA[t]=await load(t);
     const sub=(DATA['요약']||[]).map(r=>r[0]).find(x=>/기준/.test(x));
+    if(tk!==LTK)return;
     $('#upd').textContent=sub||'';
     render();
   }catch(e){
-    $('#view').innerHTML='<p class="msg">데이터를 불러오지 못했어요.<br>스프레드시트가 "링크가 있는 모든 사용자 – 뷰어"로 공유돼 있는지 확인해 주세요.</p>';
+    if(tk!==LTK)return;
+    $('#view').innerHTML='<p class="msg">데이터를 불러오지 못했어요.<br>인터넷 연결을 확인하고 다시 시도해 주세요.<br><button type="button" class="retry" onclick="loadAll()">다시 시도</button></p>';
     $('#upd').textContent='';
-  }
+  }finally{clearTimeout(slow)}
 }
 const NL={'주모임 명단':'명단','비상연락망':'연락망'};
 $('#nav').innerHTML=TABS.map(t=>'<button data-t="'+t+'">'+(NL[t]||t)+'</button>').join('');
