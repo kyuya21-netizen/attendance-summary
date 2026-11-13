@@ -64,7 +64,7 @@ nav button.on{background:var(--navy);color:#fff;font-weight:700}
 .bar{display:flex;gap:8px;margin-bottom:12px}
 .bar input{flex:1;min-width:0;width:100%;height:44px;border:1px solid var(--line);border-radius:14px;padding:0 14px;background:var(--surface);color:var(--ink);font:inherit;box-shadow:var(--shadow)}
 .bar button{white-space:nowrap;height:44px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:0 14px;font:inherit;box-shadow:var(--shadow);cursor:pointer}
-.cxl b,.cxl .kd{text-decoration:line-through;opacity:.55}.cxl .em{opacity:.5}.cxn.pn{color:#B7791F}.fnote{flex:1 1 100%;order:5;font-size:12.5px;color:#B7791F;font-weight:700;padding-left:25px}.cxn{font-size:10.5px;color:#B3402A;font-style:normal;font-weight:700}
+.cxl b,.cxl .kd{text-decoration:line-through;opacity:.55}.cxl .em{opacity:.5}.cxn.pn{color:#B7791F}.cxn{font-size:10.5px;color:#B3402A;font-style:normal;font-weight:700}
 .nmb{font:inherit;color:inherit;background:none;border:0;border-bottom:1px dotted var(--gold);padding:0;cursor:pointer}.nmd{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 10px;margin-top:6px}
 .yr[hidden]{display:none}.yr{display:flex;gap:6px;margin:0 0 12px;overflow-x:auto;scrollbar-width:none}.yr::-webkit-scrollbar{display:none}.yr button{white-space:nowrap;height:36px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);padding:0 11px;font:inherit;font-size:13.5px;cursor:pointer}.yr button.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
 @media(prefers-color-scheme:dark){.yr button.on{background:var(--navy2);border-color:var(--navy2)}}
@@ -257,12 +257,10 @@ function feastBase(y,m){const out=[];
 function feastList(y,m){const pp=ppSet(),ym=(a,b)=>a+'.'+String(b+1).padStart(2,'0'),out=feastBase(y,m);out.forEach(x=>{x.pp=pp.has(x.n+'|'+x.k+'|'+ym(y,m))});
   const py=m?y:y-1,pm=(m+11)%12;feastBase(py,pm).forEach(x=>{if(pp.has(x.n+'|'+x.k+'|'+ym(py,pm)))out.push(Object.assign({},x,{cr:1,pp:false,cx:false}))});return out}
 function feastIn(y,m){return feastList(y,m).length>0}
-const FEAST_NOTES=[{n:'동백박',k:'100일',ym:'2026.12',t:'바빠서 100일 잔치는 건너뛰고 1주년에 진행해요'}];
-function feastNote(x,y,m){const ym=y+'.'+String(m+1).padStart(2,'0'),f=FEAST_NOTES.find(z=>z.n===x.n&&z.k===x.k&&z.ym===ym);return f?'<small class="fnote">'+esc(f.t)+'</small>':''}
 function nextFeastHtml(){
   const t=new Date(),b=new Date(t.getFullYear(),t.getMonth()+1,1),y=b.getFullYear(),m=b.getMonth(),out=feastList(y,m);
   if(!out.length)return '';out.sort((a,b)=>a.d-b.d||(a.n<b.n?-1:1));
-  return '<div class="cele nx"><div class="ct">📅 '+(m+1)+'월 잔치 예정자</div><ul>'+out.map(x=>'<li'+(x.cx||x.pp?' class="cxl"':'')+'><span class="em">'+(x.k==='100일'?'🎉':'🎂')+'</span><b>'+esc(x.n)+'</b><span class="kd">'+x.k+'</span>'+feastNote(x,y,m)+'<i>'+(x.cx?'<small class="cxn">취소됨</small> ':x.pp?'<small class="cxn pn">연기됨</small> ':x.cr?'<small class="cxn pn">연기</small> ':'')+'단도박 시작일 '+esc(x.lg)+'</i></li>').join('')+'</ul></div>'}
+  return '<div class="cele nx"><div class="ct">📅 '+(m+1)+'월 잔치 예정자</div><ul>'+out.map(x=>'<li'+(x.cx||x.pp?' class="cxl"':'')+'><span class="em">'+(x.k==='100일'?'🎉':'🎂')+'</span><b>'+esc(x.n)+'</b><span class="kd">'+x.k+'</span><i>'+(x.cx?'<small class="cxn">취소됨</small> ':x.pp?'<small class="cxn pn">연기됨</small> ':x.cr?'<small class="cxn pn">연기</small> ':'')+'단도박 시작일 '+esc(x.lg)+'</i></li>').join('')+'</ul></div>'}
 function calInner(){
   const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate()),base=new Date(t0.getFullYear(),t0.getMonth()+CM,1),y=base.getFullYear(),m=base.getMonth();
   const dim=new Date(y,m+1,0).getDate(),lead=base.getDay(),ty={},ths=[];
