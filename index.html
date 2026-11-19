@@ -169,7 +169,7 @@ td.pc{position:relative;font-weight:700}
 </script>
 <script>
 const SHEET_ID='1_IlzlQDYUgUECpNJhSMEJLBqXalOOwguums1W0lP3rs';
-const TABS=['요약','주모임 명단','회계','연도별','회합별','비상연락망','자료실'];
+const TABS=['요약','주모임 명단','회계','연도별','회합별','비상연락망','자료실','소감문'];
 const DATA={};let CUR=TABS[0];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -300,6 +300,10 @@ function libHtml(){
   const L=DOCS.map((x,k)=>'<button class="song" data-doc="'+k+'"><span class="ic">'+x.i+'</span><span class="tx"><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></span><i>›</i></button>');
   L.splice(3,0,rd);
   return '<a class="hl" href="http://www.dandobak.or.kr/mobile/" target="_blank" rel="noopener noreferrer">🌐 한국단도박모임 홈페이지 바로가기 ›</a><section class="panel lib"><div class="libb"><span>📚</span><div><b>자료실</b><small>함께 보는 자료를 모아 두었어요</small></div></div>'+L.join('')+'</section>'}
+const SOGAM=[]; // 소감문 문서: {i:'✍️',t:'제목',s:'설명',pages:['docs/sogam/xxx/p01.webp']}
+function sogamHtml(){
+  const L=SOGAM.map((x,k)=>'<button class="song" data-sg="'+k+'"><span class="ic">'+x.i+'</span><span class="tx"><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></span><i>›</i></button>');
+  return '<section class="panel lib"><div class="libb"><span>✍️</span><div><b>소감문</b><small>함께 나누는 소감문을 모아 두었어요</small></div></div>'+(L.length?L.join(''):'<p class="msg">아직 올라온 소감문이 없어요.<br>준비되는 대로 이곳에 올라와요.</p>')+'</section>'}
 let SV={d:null,p:0,w:100};
 function svShow(){
   const v=$('#sv'),d=SV.d,n=d.pages.length,img=v.querySelector('img');
@@ -308,8 +312,8 @@ function svShow(){
   const sn=v.querySelector('.svn'),pv=v.querySelector('[data-a="prev"]'),nx=v.querySelector('[data-a="next"]');
   if(sn)sn.textContent=(SV.p+1)+' / '+n+'쪽';if(pv)pv.disabled=SV.p===0;if(nx)nx.disabled=SV.p===n-1;
   if(SV.p+1<n){const pr=new Image();pr.src=d.pages[SV.p+1]}}
-function openDoc(k,p){
-  const d=DOCS[k];let v=$('#sv');if(!v){v=document.createElement('div');v.id='sv';document.body.appendChild(v)}
+function openDoc(k,p,list){
+  const d=(list||DOCS)[k];let v=$('#sv');if(!v){v=document.createElement('div');v.id='sv';document.body.appendChild(v)}
   const multi=d.pages.length>1;
   v.innerHTML='<div class="svb"><b>'+esc(d.t)+'</b><span>'+(d.toc?'<button data-a="toc">목차</button>':'')+'<button data-z="-">작게</button><button data-z="+">크게</button><button data-z="x">닫기</button></span></div>'
     +'<div class="svs"><img alt=""></div>'
@@ -337,6 +341,7 @@ function render(){
   if(CUR==='연도별'){yb.innerHTML=['2024','2025','2026','개인별'].map(y=>'<button data-y="'+y+'"'+(y===YV?' class="on"':'')+'>'+(y==='개인별'?'개인별회합':y+'년')+'</button>').join('')}
   else if(yrOn){const cy=new Date().getFullYear(),ys=[];for(let y=cy;y>=Math.min(2024,cy);y--)ys.push(String(y));if(avail&&avail.length)ys.splice(0,ys.length,...avail);yb.innerHTML=ys.map(y=>'<button data-y="'+y+'"'+(y===YR?' class="on"':'')+'>'+(y?y+'년':'전체')+'</button>').join('')}
   if(CUR==='자료실'){$('#view').innerHTML=libHtml();return}
+  if(CUR==='소감문'){$('#view').innerHTML=sogamHtml();return}
   if(CUR==='회계'){$('#view').innerHTML=finCards(rows,DATA['회계 내역'],q);return}
   if(CUR==='회합별'){$('#view').innerHTML=meetCards(rows,q);return}
   if(CUR==='비상연락망'){$('#view').innerHTML=phoneCards(rows,q);return}
@@ -379,7 +384,7 @@ async function loadAll(){
   $('#view').innerHTML='<p class="msg">불러오는 중…</p>';
   const slow=setTimeout(()=>{if(tk===LTK)$('#view').innerHTML='<p class="msg">불러오는 중…<br><b>연결이 평소보다 느려요.</b><br>조금만 기다려 주세요.<br><button type="button" class="retry" onclick="loadAll()">다시 시도</button></p>'},7000);
   try{
-    for(const t of [...TABS.filter(x=>x!=='자료실'),'회계 내역'])DATA[t]=await load(t);
+    for(const t of [...TABS.filter(x=>x!=='자료실'&&x!=='소감문'),'회계 내역'])DATA[t]=await load(t);
     const sub=(DATA['요약']||[]).map(r=>r[0]).find(x=>/기준/.test(x));
     if(tk!==LTK)return;
     $('#upd').textContent=sub||'';
@@ -401,7 +406,7 @@ $('#view').addEventListener('click',e=>{const b=e.target.closest('button.fxb');i
 $('#view').addEventListener('click',e=>{const td=e.target.closest('td.fn');if(!td)return;const tr=td.parentElement,nx=tr.nextElementSibling;if(nx&&nx.classList.contains('lg')){nx.remove();return}
   const nm=td.textContent.trim(),r=(DATA['주모임 명단']||[]).slice(3).find(x=>x[0].trim()===nm);
   const n=document.createElement('tr');n.className='lg';n.innerHTML='<td colspan="'+tr.children.length+'">'+esc(nm)+' · 단도박 시작일 <b>'+esc(r&&r[2].trim()?r[2].trim():'기록 없음')+'</b>'+(r&&r[1]?' · 최초참석 '+esc(r[1].trim()):'')+(r&&r[3]&&r[3].trim()?' · 마지막 참석 <b>'+esc(r[3].trim())+'</b>':'')+'</td>';tr.after(n)});
-$('#view').addEventListener('click',e=>{const b=e.target.closest('button.song');if(b){if(b.dataset.rd)openRd();else openDoc(+b.dataset.doc)}const qb=e.target.closest('button.qtb');if(qb)openRd();const c=e.target.closest('button[data-cm]');if(c){CM=c.dataset.cm==='0'?0:CM+ +c.dataset.cm;$('#calx').innerHTML=calInner()}});
+$('#view').addEventListener('click',e=>{const b=e.target.closest('button.song');if(b){if(b.dataset.rd)openRd();else if(b.dataset.sg!==undefined)openDoc(+b.dataset.sg,0,SOGAM);else openDoc(+b.dataset.doc)}const qb=e.target.closest('button.qtb');if(qb)openRd();const c=e.target.closest('button[data-cm]');if(c){CM=c.dataset.cm==='0'?0:CM+ +c.dataset.cm;$('#calx').innerHTML=calInner()}});
 document.addEventListener('click',e=>{const v=$('#sv');if(!v||!SV.d)return;const t=e.target.closest('#sv button');if(!t)return;
   const n=SV.d.pages.length;
   if(t.dataset.z){const k=t.dataset.z;if(k==='x'){v.style.display='none';document.body.style.overflow='';return}
