@@ -83,6 +83,7 @@ nav button.on{background:var(--navy);color:#fff;font-weight:700}
 .hl{display:block;margin:0 0 8px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--gold);font-size:13px;font-weight:700;text-align:center;text-decoration:none}.libb{display:flex;align-items:center;gap:12px;margin:-16px -14px 12px;padding:12px 16px;border-radius:17px 17px 0 0;color:var(--chalk);background:radial-gradient(90% 120% at 100% 0,rgba(232,118,43,.35),rgba(232,118,43,0) 55%),linear-gradient(150deg,var(--navy2),var(--navy))}.libb>span{font-size:30px}.libb b{display:block;font:700 22px/1.2 var(--serif);color:#fff}.libb small{display:block;margin-top:4px;font-size:13px;opacity:.85}
 .song{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;margin:0 0 8px;padding:7px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);text-align:left;font:inherit;cursor:pointer;box-shadow:var(--shadow)}.song:last-child{margin-bottom:0}.song .ic{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--head);font-size:21px}.song .tx{flex:1;min-width:0}.song b{display:block;font-size:17px;line-height:1.25}.song small{display:block;margin-top:1px;font-size:13px;color:var(--muted)}.song i{flex:none;font-style:normal;font-size:24px;color:var(--muted)}
 #sv{display:none;position:fixed;inset:0;z-index:100;flex-direction:column;background:var(--bg)}.svb{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;background:var(--navy);color:#fff}.svb>b{flex:1;min-width:0;font:700 16px/1.25 var(--serif);word-break:keep-all}.svb>span{display:flex;gap:6px}.svb button{height:38px;min-width:54px;padding:0 12px;border:1px solid rgba(255,255,255,.45);border-radius:999px;background:rgba(255,255,255,.1);color:#fff;font:700 14px 'Noto Sans KR',sans-serif;cursor:pointer}
+.svx{max-width:640px;margin:0 auto;padding:18px 18px 56px;color:var(--ink)}.svx small{display:block;margin:0 0 16px;color:var(--muted);font-size:.72em}.svx p{margin:0 0 1.1em;line-height:1.85;word-break:keep-all}
 .svs{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y pinch-zoom;background:var(--bg)}.svs img{display:block;max-width:none;height:auto}.svf{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line)}.svf button{height:46px;min-width:104px;border:1px solid var(--line);border-radius:14px;background:var(--navy);color:#fff;font:700 16px 'Noto Sans KR',sans-serif;cursor:pointer}.svf button:disabled{opacity:.3}.svn{font:700 15px 'Noto Sans KR',sans-serif;color:var(--ink)}
 .svt{position:absolute;left:0;right:0;top:calc(58px + env(safe-area-inset-top,0px));bottom:0;overflow:auto;background:var(--surface);padding:6px 14px 24px}.svt[hidden]{display:none}.svt>b{display:block;margin:8px 0;font:700 18px var(--serif)}.svt button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:52px;padding:10px 4px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);text-align:left;word-break:keep-all;font:500 16px 'Noto Sans KR',sans-serif;cursor:pointer}.svt button i{flex:none;font-style:normal;font-size:13px;color:var(--muted)}
 .svh{margin:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));font-size:13px;text-align:center;color:var(--muted);background:var(--surface);border-top:1px solid var(--line)}
@@ -322,6 +323,10 @@ function svShow(){
   if(SV.p+1<n){const pr=new Image();pr.src=d.pages[SV.p+1]}}
 function openDoc(k,p,list){
   const d=(list||DOCS)[k];let v=$('#sv');if(!v){v=document.createElement('div');v.id='sv';document.body.appendChild(v)}
+  if(d.text){
+    v.innerHTML='<div class="svb"><b>'+esc(d.t)+'</b><span><button data-z="-">작게</button><button data-z="+">크게</button><button data-z="x">닫기</button></span></div>'
+      +'<div class="svs"><div class="svx" style="font-size:19px">'+(d.s?'<small>'+esc(d.s)+'</small>':'')+d.text.split(/\n+/).filter(Boolean).map(t=>'<p>'+esc(t)+'</p>').join('')+'</div></div>';
+    SV={d:{t:d.t,pages:[]},p:0,w:100,fs:19,tx:1};v.style.display='flex';document.body.style.overflow='hidden';return}
   const multi=d.pages.length>1;
   v.innerHTML='<div class="svb"><b>'+esc(d.t)+'</b><span>'+(d.toc?'<button data-a="toc">목차</button>':'')+'<button data-z="-">작게</button><button data-z="+">크게</button><button data-z="x">닫기</button></span></div>'
     +'<div class="svs"><img alt=""></div>'
@@ -405,6 +410,7 @@ async function loadAll(){
 }
 const NL={'주모임 명단':'명단','비상연락망':'연락망'};
 $('#nav').innerHTML=TABS.map(t=>'<button data-t="'+t+'">'+(NL[t]||t)+'</button>').join('');
+fetch('docs/sogam.json?_='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():{}).then(j=>{for(const k in j)SOGAM[k]=j[k];if(CUR==='소감문')render()}).catch(()=>{});
 $('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){CUR=b.dataset.t;render();scrollTo(0,0)}});
 $('#view').addEventListener('click',e=>{const g=e.target.closest('[data-gotab]');if(g){CUR=g.dataset.gotab;if(g.dataset.goyv)YV=g.dataset.goyv;render();scrollTo(0,0)}});
 $('#view').addEventListener('click',e=>{const b=e.target.closest('button.fxb');if(!b)return;const tr=b.closest('tr'),nx=tr.nextElementSibling;if(nx&&nx.classList.contains('lg')){nx.remove();return}
@@ -418,6 +424,7 @@ $('#view').addEventListener('click',e=>{const b=e.target.closest('button.song');
 document.addEventListener('click',e=>{const v=$('#sv');if(!v||!SV.d)return;const t=e.target.closest('#sv button');if(!t)return;
   const n=SV.d.pages.length;
   if(t.dataset.z){const k=t.dataset.z;if(k==='x'){v.style.display='none';document.body.style.overflow='';return}
+    if(SV.tx){SV.fs=Math.max(15,Math.min(34,SV.fs+(k==='+'?3:-3)));v.querySelector('.svx').style.fontSize=SV.fs+'px';return}
     SV.w=k==='+'?Math.min(300,SV.w+50):Math.max(100,SV.w-50);v.querySelector('img').style.width=SV.w+'%';return}
   if(t.dataset.a==='prev'&&SV.p>0){SV.p--;svShow();return}
   if(t.dataset.a==='next'&&SV.p<n-1){SV.p++;svShow();return}
