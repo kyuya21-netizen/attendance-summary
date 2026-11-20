@@ -315,7 +315,7 @@ function sogamHtml(){
     keys=names}
   if(!keys.length)return '<section class="panel lib">'+head+'<p class="msg">아직 올라온 가족 소감문이 없어요.</p></section>';
   const L=keys.map(n=>{const d=SOGAM[n]||[],open=SGO===n&&d.length>0,nm=fam?n.slice(3):n;
-    let h='<button class="song" data-sgn="'+esc(n)+'"'+(d.length?'':' style="opacity:.6"')+'><span class="ic">'+(d.length?'✍️':'👤')+'</span><span class="tx"><b>'+esc(nm)+'</b><small>'+(d.length?(d.map(x=>x.y).filter(Boolean).join(' · ')||'소감문 '+d.length+'편')+(d.some(x=>x.y)?' 소감문':''):'아직 올라온 소감문이 없어요')+'</small></span><i>'+(d.length?(open?'⌃':'⌄'):'›')+'</i></button>';
+    let h='<button class="song" data-sgn="'+esc(n)+'"'+(d.length?'':' style="opacity:.6"')+'><span class="ic">'+(d.length?'✍️':'👤')+'</span><span class="tx"><b>'+esc(nm)+(d[0]&&d[0].f?' <span style="font-size:.62em;font-weight:500;opacity:.75">'+esc(d[0].f)+'</span>':'')+'</b><small>'+(d.length?(d.map(x=>x.y).filter(Boolean).join(' · ')||'소감문 '+d.length+'편')+(d.some(x=>x.y)?' 소감문':''):'아직 올라온 소감문이 없어요')+'</small></span><i>'+(d.length?(open?'⌃':'⌄'):'›')+'</i></button>';
     if(open)h+='<div style="margin:-2px 0 10px 18px">'+d.map((x,k)=>'<button class="song" data-sgd="'+esc(n)+'|'+k+'"><span class="ic">📄</span><span class="tx"><b>'+esc(x.t)+'</b><small>'+esc((x.s?x.s+' · ':'')+'눌러서 읽기')+'</small></span><i>›</i></button>').join('')+'</div>';
     return h});
   return '<section class="panel lib">'+head+L.join('')+'</section>'}
