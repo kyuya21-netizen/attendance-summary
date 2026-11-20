@@ -308,7 +308,7 @@ const SGN='<p style="margin:0 0 14px;padding:11px 14px;font-size:15px;font-weigh
 function sogamHtml(){
   const fam=SGF==='가족';
   const tabs='<div style="display:flex;gap:8px;margin:0 0 12px">'+['협심자','가족'].map(f=>'<button class="song" data-sgf="'+f+'" style="flex:1;justify-content:center;margin:0;'+(SGF===f?'background:#f3d9c4;font-weight:800':'opacity:.75')+'"><span class="ic">'+(f==='가족'?'👨‍👩‍👧':'🤝')+'</span><span class="tx"><b>'+f+'</b></span></button>').join('')+'</div>';
-  const head='<div class="libb"><span>✍️</span><div><b>소감문 · '+SGF+'</b><small>'+(fam?'가족 소감문을 볼 수 있어요':'소감문을 올린 분이에요. 이름을 누르면 볼 수 있어요')+'</small></div></div>'+SGN+tabs;
+  const head='<div class="libb"><span>✍️</span><div><b>소감문 · '+SGF+'</b></div></div>'+SGN+tabs;
   let keys;
   if(fam)keys=Object.keys(SOGAM).filter(k=>k.indexOf('가족/')===0);
   else{const names=mainRos().map(r=>(r[0]||'').trim()).filter(Boolean);
