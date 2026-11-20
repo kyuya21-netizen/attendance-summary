@@ -307,13 +307,13 @@ let SGF='협심자';
 function sogamHtml(){
   const fam=SGF==='가족';
   const tabs='<div style="display:flex;gap:8px;margin:0 0 12px">'+['협심자','가족'].map(f=>'<button class="song" data-sgf="'+f+'" style="flex:1;justify-content:center;margin:0;'+(SGF===f?'background:#f3d9c4;font-weight:800':'opacity:.75')+'"><span class="ic">'+(f==='가족'?'👨‍👩‍👧':'🤝')+'</span><span class="tx"><b>'+f+'</b></span></button>').join('')+'</div>';
-  const head='<div class="libb"><span>✍️</span><div><b>소감문 · '+SGF+'</b><small>'+(fam?'가족 소감문을 볼 수 있어요':'이름을 누르면 소감문을 볼 수 있어요')+'</small></div></div>'+tabs;
+  const head='<div class="libb"><span>✍️</span><div><b>소감문 · '+SGF+'</b><small>'+(fam?'가족 소감문을 볼 수 있어요':'소감문을 올린 분이에요. 이름을 누르면 볼 수 있어요')+'</small></div></div>'+tabs;
   let keys;
   if(fam)keys=Object.keys(SOGAM).filter(k=>k.indexOf('가족/')===0);
   else{const names=mainRos().map(r=>(r[0]||'').trim()).filter(Boolean);
     if(!names.length)return '<section class="panel lib">'+head+'<p class="msg">명단을 불러오는 중이에요.<br>잠시 뒤 다시 눌러 주세요.</p></section>';
-    keys=names}
-  if(!keys.length)return '<section class="panel lib">'+head+'<p class="msg">아직 올라온 가족 소감문이 없어요.</p></section>';
+    keys=names.filter(n=>(SOGAM[n]||[]).length)}
+  if(!keys.length)return '<section class="panel lib">'+head+'<p class="msg">아직 올라온 '+(fam?'가족 ':'')+'소감문이 없어요.</p></section>';
   const L=keys.map(n=>{const d=SOGAM[n]||[],open=SGO===n&&d.length>0,nm=fam?n.slice(3):n;
     let h='<button class="song" data-sgn="'+esc(n)+'"'+(d.length?'':' style="opacity:.6"')+'><span class="ic">'+(d.length?'✍️':'👤')+'</span><span class="tx"><b>'+esc(nm)+(d[0]&&d[0].f?' <span style="font-size:.62em;font-weight:500;opacity:.75">'+esc(d[0].f)+'</span>':'')+'</b><small>'+(d.length?(d.map(x=>x.y).filter(Boolean).join(' · ')||'소감문 '+d.length+'편')+(d.some(x=>x.y)?' 소감문':''):'아직 올라온 소감문이 없어요')+'</small></span><i>'+(d.length?(open?'⌃':'⌄'):'›')+'</i></button>';
     if(open)h+='<div style="margin:-2px 0 10px 18px">'+d.map((x,k)=>'<button class="song" data-sgd="'+esc(n)+'|'+k+'"><span class="ic">📄</span><span class="tx"><b>'+esc(x.t)+'</b><small>'+esc((x.s?x.s+' · ':'')+'눌러서 읽기')+'</small></span><i>›</i></button>').join('')+'</div>';
