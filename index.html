@@ -262,9 +262,13 @@ function feastList(y,m){const pp=ppSet(),ym=(a,b)=>a+'.'+String(b+1).padStart(2,
   const py=m?y:y-1,pm=(m+11)%12;feastBase(py,pm).forEach(x=>{if(pp.has(x.n+'|'+x.k+'|'+ym(py,pm)))out.push(Object.assign({},x,{cr:1,pp:false,cx:false}))});return out}
 function feastIn(y,m){return feastList(y,m).length>0}
 var CELEM=0;
+function kdKey(k){k=k||'';if(k==='100일')return 0;const m=k.match(/(\d+)주년/);return m?+m[1]:999}
+function sortCeleLis(h){const i=h.lastIndexOf('<ul>');if(i<0)return h;const head=h.slice(0,i+4),lis=h.slice(i+4).match(/<li[\s\S]*?<\/li>/g);if(!lis||!lis.length)return h;
+  const key=l=>{const m=l.match(/class="kd">([^<]*)</);return kdKey(m&&m[1])};
+  return head+lis.map((l,j)=>[l,j]).sort((x,y)=>key(x[0])-key(y[0])||x[1]-y[1]).map(x=>x[0]).join('')}
 function nextFeastHtml(){
   const t=new Date(),b=new Date(t.getFullYear(),t.getMonth()+1,1),y=b.getFullYear(),m=b.getMonth(),out=feastList(y,m);
-  if(!out.length||CELEM===m+1)return '';out.sort((a,b)=>a.d-b.d||(a.n<b.n?-1:1));
+  if(!out.length||CELEM===m+1)return '';out.sort((a,b)=>kdKey(a.k)-kdKey(b.k)||a.d-b.d||(a.n<b.n?-1:1));
   return '<div class="cele nx"><div class="ct">📅 '+(m+1)+'월 잔치 예정자</div><ul>'+out.map(x=>'<li'+(x.cx||x.pp?' class="cxl"':'')+'><span class="em">'+(x.k==='100일'?'🎉':'🎂')+'</span><b>'+esc(x.n)+'</b><span class="kd">'+x.k+'</span><i>'+(x.cx?'<small class="cxn">'+cxTag(x.n,x.k,y+'.'+String(m+1).padStart(2,'0'))+'</small> ':x.pp?'<small class="cxn pn">연기됨</small> ':x.cr?'<small class="cxn pn">연기</small> ':'')+'단도박 시작일 '+esc(x.lg)+'</i></li>').join('')+'</ul></div>'}
 function calInner(){
   const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate()),base=new Date(t0.getFullYear(),t0.getMonth()+CM,1),y=base.getFullYear(),m=base.getMonth();
@@ -369,7 +373,7 @@ function render(){
   if(CUR==='비상연락망'){$('#view').innerHTML=phoneCards(rows,q);return}
   const upd=$('#upd').textContent;
   let rosH=0,html='',open=false,hdrNext=false,title=true,bigNext=false,person=false,cele=false,celeN=0,pHead=[],skipM=false,skipV=false,ta=false,pre=false;
-  const close=()=>{if(open){if(cele){html+=(celeN?'</ul>':'<p class="cnone">'+(pre?'아직 예정된 분이 없어요.':'이번 달 잔치자는 없어요.')+'</p>')+'</div>'+(pre?'':nextFeastHtml())+'</section>';cele=false;celeN=0;pre=false}else html+=person?'</div></section>':'</tbody></table></div></section>';open=false}};
+  const close=()=>{if(open){if(cele){if(celeN)html=sortCeleLis(html);html+=(celeN?'</ul>':'<p class="cnone">'+(pre?'아직 예정된 분이 없어요.':'이번 달 잔치자는 없어요.')+'</p>')+'</div>'+(pre?'':nextFeastHtml())+'</section>';cele=false;celeN=0;pre=false}else html+=person?'</div></section>':'</tbody></table></div></section>';open=false}};
   rows.forEach(r=>{
     const cells=r.map(x=>x.trim()),ne=cells.filter(Boolean);
     if(CUR==='연도별'){if(!ne.length)skipV=false;else if(ne.length===1&&(/^\d{4}년 월별/.test(cells[0])||/^개인별/.test(cells[0])))skipV=!(YV==='개인별'?/^개인별/.test(cells[0]):cells[0].startsWith(YV+'년'));if(skipV&&ne.length)return}
