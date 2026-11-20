@@ -308,7 +308,7 @@ const SGN='<p style="margin:0 0 14px;padding:11px 14px;font-size:12px;font-weigh
 function sogamHtml(){
   const fam=SGF==='가족';
   const tabs='<div style="display:flex;gap:8px;margin:0 0 12px">'+['협심자','가족'].map(f=>'<button class="song" data-sgf="'+f+'" style="flex:1;justify-content:center;margin:0;'+(SGF===f?'background:#f3d9c4;font-weight:800':'opacity:.75')+'"><span class="ic">'+(f==='가족'?'👨‍👩‍👧':'🤝')+'</span><span class="tx"><b>'+f+'</b></span></button>').join('')+'</div>';
-  const head='<div class="libb" style="flex-direction:column;align-items:flex-start;gap:4px;padding:15px 18px 14px"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:30px;line-height:1">✍️</span><b>소감문 · '+SGF+'</b></div><small style="display:block;font-size:12.5px;font-weight:500;line-height:1.5;opacity:.92;word-break:keep-all;padding-left:2px">🌱 선생님·여사님들의 회복과 성장의<br>이야기가 담겨 있어요</small></div>'+SGN+tabs;
+  const head='<div class="libb" style="flex-direction:column;align-items:flex-start;gap:4px;padding:15px 18px 14px"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:30px;line-height:1">✍️</span><b>소감문 · '+SGF+'</b></div><small style="display:flex;gap:5px;font-size:12.5px;font-weight:500;line-height:1.5;opacity:.92;word-break:keep-all;padding-left:2px"><span>🌱</span><span>선생님·여사님들의 회복과 성장의<br>이야기가 담겨 있어요</span></small></div>'+SGN+tabs;
   let keys;
   if(fam)keys=Object.keys(SOGAM).filter(k=>k.indexOf('가족/')===0);
   else{const names=mainRos().map(r=>(r[0]||'').trim()).filter(Boolean);
