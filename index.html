@@ -212,7 +212,7 @@ async function loadJson(name){
 async function load(name){try{return await loadCsv(name)}catch(e){return await loadJson(name)}}
 const SHORT={'마지막도박일':'단도박 시작일','마지막 도박일':'단도박 시작일','회합 횟수':'횟수','주모임 참석':'주','타모임 참석':'타','총 참석':'총','주모임 출석':'주'};
 let YEAR=String(new Date().getFullYear());
-let YV='2026';
+let YV='2026',RSEC='main';
 function taOld(d,y){const m=/^(\d{4})\.(\d{1,2})\.(\d{1,2})/.exec(String(d||'').trim());if(!m)return false;const n=new Date(),cut=new Date(n.getFullYear()-(y||2),n.getMonth(),n.getDate());return new Date(+m[1],+m[2]-1,+m[3])<cut}
 const NB=t=>String(t).split(/\s*,\s*/).filter(Boolean).map(n=>'<button type="button" class="nmb" data-n="'+esc(n)+'">'+esc(n)+'</button>').join(', ');
 function mainRos(){const R=(DATA['주모임 명단']||[]).slice(3),i=R.findIndex(r=>/^(타모임 명단|주모임 휴면|잔치 취소|잔치 연기)/.test((r[0]||'').trim()));return i<0?R:R.slice(0,i)}
@@ -369,11 +369,12 @@ function render(){
   const rows=DATA[CUR]||[],q=$('#q').value.replace(/\s+/g,'');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===CUR));
   $('#view').classList.toggle('ros',CUR==='주모임 명단');
-  const yb=$('#yr'),yrOn=CUR==='회합별'||CUR==='회계'||CUR==='연도별';yb.hidden=!yrOn;
+  const yb=$('#yr'),yrOn=CUR==='회합별'||CUR==='회계'||CUR==='연도별'||CUR==='주모임 명단';yb.hidden=!yrOn;
   let avail=null;
   if(CUR==='회계'){avail=[...new Set((DATA['회계']||[]).slice(3).map(r=>r.map(x=>x.trim())).filter(c=>c[0]&&/^\d{4}/.test(c[1]||'')&&[2,3,4,5,6,7,8,9].some(i=>num(c[i])!==0)).map(c=>c[1].slice(0,4)))].sort().reverse();if(avail.length&&!avail.includes(YEAR))YEAR=avail[0];if(avail.length<2)yb.hidden=true}
   const YR=YEAR;
-  if(CUR==='연도별'){yb.innerHTML=['2024','2025','2026','개인별'].map(y=>'<button data-y="'+y+'"'+(y===YV?' class="on"':'')+'>'+(y==='개인별'?'개인별회합':y+'년')+'</button>').join('')}
+  if(CUR==='주모임 명단'){yb.innerHTML=[['main','주모임'],['hm','주모임 휴면'],['ta','타모임']].map(([k,l])=>'<button data-y="'+k+'"'+(k===RSEC?' class="on"':'')+'>'+l+'</button>').join('')}
+  else if(CUR==='연도별'){yb.innerHTML=['2024','2025','2026','개인별'].map(y=>'<button data-y="'+y+'"'+(y===YV?' class="on"':'')+'>'+(y==='개인별'?'개인별회합':y+'년')+'</button>').join('')}
   else if(yrOn){const cy=new Date().getFullYear(),ys=[];for(let y=cy;y>=Math.min(2024,cy);y--)ys.push(String(y));if(avail&&avail.length)ys.splice(0,ys.length,...avail);yb.innerHTML=ys.map(y=>'<button data-y="'+y+'"'+(y===YR?' class="on"':'')+'>'+(y?y+'년':'전체')+'</button>').join('')}
   if(CUR==='자료실'){$('#view').innerHTML=libHtml();return}
   if(CUR==='소감문'){$('#view').innerHTML=sogamHtml();return}
@@ -392,10 +393,10 @@ function render(){
       if(CUR==='주모임 명단'){ta=/^타모임 명단/.test(cells[0]);hm=/^주모임 휴면/.test(cells[0])}
       if(title){title=false;return}
       if(cells[0]===upd){return}
-      if(cells[0].length>22||/^최근 회합/.test(cells[0])){html+='<p class="sub">'+esc(cells[0])+'</p>';return}
-      close();person=false;if(CUR==='요약'&&/^\d+월 잔치 예정/.test(cells[0])){html+='<section class="panel"><div class="cele"><div class="ct">📅 '+esc(cells[0].replace('잔치 예정','잔치 예정자'))+'</div><ul>';open=true;cele=true;pre=true;celeN=0;hdrNext=true;person=false;bigNext=false;return}if(/^다음 잔치/.test(cells[0])){html+='<section class="panel">';open=true;person=true;hdrNext=false;bigNext=true;return}html+='<section class="panel">'+(CUR==='요약'&&/개인별/.test(cells[0])?'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px"><h2 style="margin:0">'+esc(cells[0])+'</h2><button type="button" data-gotab="연도별" data-goyv="개인별" style="flex:none;height:32px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer">더보기 ›</button></div>':'<h2>'+esc(cells[0])+'</h2>'+(CUR==='주모임 명단'&&ta?'<p class="sub">최근 2년 안에 회합에 나온 인원만 보여요. 2년이 지나면 자동으로 명단에서 빠져요.</p>':'')+(CUR==='주모임 명단'&&hm?'<p class="sub">마지막 참석일로부터 6달이 지난 분들이에요. 1년이 지나면 자동으로 명단에서 빠져요.</p>':''))+'<div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true;bigNext=false;return}
+      if(cells[0].length>22||/^최근 회합/.test(cells[0])){html+='<p class="sub"'+(CUR==='주모임 명단'?' data-sec="etc"':'')+'>'+esc(cells[0])+'</p>';return}
+      close();person=false;if(CUR==='요약'&&/^\d+월 잔치 예정/.test(cells[0])){html+='<section class="panel"><div class="cele"><div class="ct">📅 '+esc(cells[0].replace('잔치 예정','잔치 예정자'))+'</div><ul>';open=true;cele=true;pre=true;celeN=0;hdrNext=true;person=false;bigNext=false;return}if(/^다음 잔치/.test(cells[0])){html+='<section class="panel">';open=true;person=true;hdrNext=false;bigNext=true;return}html+='<section class="panel"'+(CUR==='주모임 명단'?' data-sec="'+(ta?'ta':hm?'hm':'etc')+'"':'')+'>'+(CUR==='요약'&&/개인별/.test(cells[0])?'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px"><h2 style="margin:0">'+esc(cells[0])+'</h2><button type="button" data-gotab="연도별" data-goyv="개인별" style="flex:none;height:32px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer">더보기 ›</button></div>':'<h2>'+esc(cells[0])+'</h2>'+(CUR==='주모임 명단'&&ta?'<p class="sub">최근 2년 안에 회합에 나온 인원만 보여요. 2년이 지나면 자동으로 명단에서 빠져요.</p>':'')+(CUR==='주모임 명단'&&hm?'<p class="sub">마지막 참석일로부터 6달이 지난 분들이에요. 1년이 지나면 자동으로 명단에서 빠져요.</p>':''))+'<div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true;bigNext=false;return}
     if(bigNext){setSF(cells);const fdone=SF&&Date.now()>=new Date(SF.y,SF.m,SF.d,21,0).getTime();CELEM=parseInt((cells[0].split('.')[1]||''),10)||0;html+='<div class="calx" id="calx">'+calInner()+'</div><div class="cele'+(fdone?' cdone':'')+'"><div class="ct">🎉 '+(parseInt((cells[0].split('.')[1]||''),10)||'')+'월 잔치자 축하합니다! 🎉'+(fdone?' <span class="dn">✅ 완료</span>':'')+'</div><ul>';cele=true;celeN=0;bigNext=false;hdrNext=true;person=false;return}
-    if(!open){html+='<section class="panel">'+(CUR==='주모임 명단'&&!rosH?(rosH=1,'<h2>주모임 명단</h2>'):'')+'<div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true}
+    if(!open){html+='<section class="panel"'+(CUR==='주모임 명단'?' data-sec="main"':'')+'>'+(CUR==='주모임 명단'&&!rosH?(rosH=1,'<h2>주모임 명단</h2>'):'')+'<div style="overflow-x:auto"><table><tbody>';open=true;hdrNext=true}
     const isTot=cells[0]==='총계',hit=(!q||cells.join('').replace(/\s+/g,'').includes(q))&&!(CUR==='월간 보고'&&YR&&/^\d{4}\./.test(cells[0])&&!cells[0].startsWith(YR));
     if(cele){if(hdrNext){hdrNext=false;return}celeN++;const mr=mainRos().find(x=>(x[0]||'').trim()===cells[0]),lg=mr&&(mr[2]||'').trim();html+='<li'+(cells[3]==='취소'||cells[3]==='연기'?' class="cxl"':'')+'><span class="em">'+(/주년/.test(cells[1])?'🎂':'🎉')+'</span><b>'+esc(cells[0])+'</b><span class="kd">'+esc(cells[1]||'')+'</span><i>'+(cells[3]==='취소'?'<small class="cxn">'+cxTag(cells[0],cells[1],(cells[2]||'').slice(0,7),cells[4])+'</small> ':cells[3]==='연기'?'<small class="cxn pn">연기됨</small> ':cells[3]==='이월'?'<small class="cxn pn">연기</small> ':'')+(lg?'단도박 시작일 '+esc(lg):esc((cells[2]||'').slice(5)))+'</i></li>';return}
     if(hdrNext&&(cells[0]==='이름'||cells[0]==='익명')&&cells.length>=9){pHead=cells;person=true;html=html.replace(/<div style="overflow-x:auto"><table><tbody>$/,'<div>');hdrNext=false;return}
@@ -411,6 +412,10 @@ function render(){
   close();
   if(CUR==='요약'&&html)html=quoteHtml()+html;
   $('#view').innerHTML=html||'<p class="msg">내용이 없어요.</p>';
+  if(CUR==='주모임 명단'){const V=$('#view'),all=!!q,cnt=k=>{const p=V.querySelector('section[data-sec="'+k+'"]');return p?[...p.querySelectorAll('tr')].filter(r=>r.querySelector('td')).length:0};
+    [['main','주모임'],['hm','주모임 휴면'],['ta','타모임']].forEach(([k,l])=>{const b=yb.querySelector('button[data-y="'+k+'"]');if(b)b.textContent=l+' '+cnt(k)});
+    V.querySelectorAll('[data-sec]').forEach(el=>{const k=el.dataset.sec==='etc'?'main':el.dataset.sec;el.style.display=(all||k===RSEC)?'':'none'});
+    if(!all&&RSEC!=='main'&&!V.querySelector('[data-sec="'+RSEC+'"]'))V.insertAdjacentHTML('afterbegin','<p class="msg">'+(RSEC==='hm'?'휴면 인원이 없어요.':'타모임 인원이 없어요.')+'</p>')}
   document.querySelectorAll('#view table').forEach(t=>{const hh=[...t.querySelectorAll('th')].map(x=>x.textContent);if(hh[0]==='순위'){const pi=hh.indexOf('출석률');t.querySelectorAll('tr').forEach(tr=>{const td=tr.children;if(!td.length||td[0].tagName==='TH')return;const n=+td[0].textContent;if(n>=1&&n<=3)td[0].innerHTML='<span class="rk r'+n+'">'+n+'</span>';const c=td[pi];if(c){const v=parseInt(c.textContent);if(v>=0){c.classList.add('pc');c.style.background='linear-gradient(90deg,color-mix(in srgb,var(--gold2) 30%,transparent) '+v+'%,transparent '+v+'%)'}}})}});
   document.querySelectorAll('#view table').forEach(t=>{const h=[...t.querySelectorAll('th')].map(x=>x.textContent);if((h[0]==='이름'||h[0]==='익명')&&h[2]==='날짜')t.querySelectorAll('tr').forEach(tr=>{const d=tr.querySelector('td');if(d)d.classList.add('fn')})});
 }
@@ -529,7 +534,7 @@ $('#q').addEventListener('input',render);
 $('#view').addEventListener('click',e=>{const b=e.target.closest('button.nmb');if(!b)return;const p=b.closest('p'),nx=p.nextElementSibling,n=b.dataset.n;
   if(nx&&nx.classList.contains('nmd')){const same=nx.dataset.n===n;nx.remove();if(same)return}
   const d=document.createElement('p');d.className='n nmd';d.dataset.n=n;d.innerHTML=nameInfo(n);p.after(d)});
-$('#yr').addEventListener('click',e=>{const b=e.target.closest('button');if(b){if(CUR==='연도별')YV=b.dataset.y;else YEAR=b.dataset.y;render()}});
+$('#yr').addEventListener('click',e=>{const b=e.target.closest('button');if(b){if(CUR==='연도별')YV=b.dataset.y;else if(CUR==='주모임 명단')RSEC=b.dataset.y;else YEAR=b.dataset.y;render()}});
 $('#rf').addEventListener('click',loadAll);
 loadAll();
 
