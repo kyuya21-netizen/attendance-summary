@@ -309,7 +309,7 @@ function libHtml(){
 const SOGAM={}; // 소감문: 이름 -> [{t:'제목',s:'설명',pages:['docs/sogam/이름/p01.webp']}]
 let SGO=null;
 let SGF='협심자';
-const SGN='<p style="margin:0 0 14px;padding:11px 14px;font-size:12px;font-weight:600;line-height:1.5;word-break:keep-all;color:var(--ink,#222);background:#fdf1e6;border:1px solid #f0c9a6;border-radius:12px;text-align:center">📌 이 소감문은 작성자 본인의 허락을 받아 게재했으며, 일부는 단도박모임 사이트의 글을 참고했습니다.</p>';
+const SGN='<p style="margin:0 0 14px;padding:11px 14px;font-size:12px;font-weight:600;line-height:1.5;word-break:keep-all;color:var(--ink,#222);background:#fdf1e6;border:1px solid #f0c9a6;border-radius:12px;text-align:center">📌 이 소감문은 작성자 본인의 허락을 받았거나, 단도박모임 사이트에 올라온 글입니다.</p>';
 function sogamHtml(){
   const fam=SGF==='가족';
   const tabs='<div style="display:flex;gap:8px;margin:0 0 12px">'+['협심자','가족'].map(f=>'<button class="song" data-sgf="'+f+'" style="flex:1;justify-content:center;margin:0;'+(SGF===f?'background:#f3d9c4;font-weight:800':'opacity:.75')+'"><span class="ic">'+(f==='가족'?'👨‍👩‍👧':'🤝')+'</span><span class="tx"><b>'+f+'</b></span></button>').join('')+'</div>';
